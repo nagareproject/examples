@@ -1,0 +1,28 @@
+.FixedWidth {
+	width: 1300px;
+}
+
+.portlet {
+    border: 1px solid #dbe5cf;
+    margin: 5px;
+    margin-bottom: 20px;
+}
+
+.portletColumn {
+    position: relative;
+    float: left;
+    width: 420px;
+    height: 600px;
+}
+
+.portletHandle {
+    height: 27px;
+    background-image: url(./iGoogBg.gif);
+    background-repeat: repeat-x;
+    border-bottom: 0;
+    color: #376F18;
+    font-size: 77%;
+    font-weight: bold;
+    padding: 5px 4px;
+    cursor: move;
+}

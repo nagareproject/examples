@@ -1,0 +1,15 @@
+.nagare-error-field, .nagare-error-input, .nagare-error-message {
+    display: inline;
+}
+
+.nagare-error-input {
+	background: url("redline.png") left bottom repeat-x;
+    padding-bottom: 4px;
+}
+
+.nagare-error-message {
+    color:  #c30;
+    font-size: 60%;
+    padding-left: 3px;
+    font-weight: bold;
+}
