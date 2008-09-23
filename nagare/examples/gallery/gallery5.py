@@ -60,9 +60,9 @@ class PhotoCreator(editor.Editor):
         self.img.validate(self.validate_img)
 
     def validate_img(self, img):
-        if not img:
+        if isinstance(img, basestring):
             raise ValueError, 'Image not provided'
-        return img
+        return img.file.read()
 
     def commit(self, comp):
         """The form is validated if the ``title`` and ``img`` property are valid
