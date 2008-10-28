@@ -158,7 +158,7 @@ def render(self, h, *args):
 
         h << 'Upload a file:' << h.input(type='file').action(self.file) << h.br
 
-        h << 'Password:' << h.input(type='password', lenght=10).action(self.password)
+        h << 'Password:' << h.input(type='password', length=10).action(self.password)
         h << ' '
         h << 'Confirm:' << h.input(type='password', length=10).action(self.confirm).error(self.confirm.error)
         h << h.hr
@@ -244,7 +244,7 @@ def render(self, h, *args):
 
         h << 'Upload a file:' << h.input(type='file').action(self.file) << h.br
 
-        h << 'Password:' << h.input(type='password', lenght=10).action(self.password)
+        h << 'Password:' << h.input(type='password', length=10).action(self.password)
         h << ' '
         h << 'Confirm:' << h.input(type='password', length=10).action(self.confirm)
         h << h.hr
