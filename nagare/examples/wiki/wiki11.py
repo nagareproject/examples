@@ -7,7 +7,7 @@
 # this distribution.
 #--
 
-"""Basic HTTP authentification of the users added.
+"""Basic HTTP authentication of the users added.
 
 First, log as the editor 'john / john'.
 Then try as the administrator 'admin / admin'.
@@ -169,8 +169,8 @@ from nagare.security import common
 # We define 3 classes:
 #
 #  - the ``User`` class defines the attributes of the users
-#  - the ``Authentification`` class defines how the users are identified /
-#    authentified
+#  - the ``Authentication`` class defines how the users are identified /
+#    authenticated
 #  - the ``HardcodedRules`` class defines the mapping between the users and
 #    the permissions
 
@@ -180,16 +180,16 @@ class User(common.User):
                         # (his name)
 
 
-# We use the basic HTTP authentification to identified and authentified the
+# We use the basic HTTP authentication to identify and authenticate the
 # users
 from nagare.security import basic_auth
 
-class Authentification(basic_auth.Authentification):
+class Authentication(basic_auth.Authentication):
     def get_password(self, username):
         # For this example, the passwords are the same than the users name
         return username
     
-    # When a user is identified and authentified, when create a ``User`` object
+    # When a user is identified and authenticated, then create a ``User`` object
     def _create_user(self, username):
         return None if username is None else User(username)
 
@@ -210,9 +210,9 @@ class HardcodedRules(common.Rules):
         return user.id == 'admin'
     
 
-# A security manager is often a mixin of an authentification manager and
+# A security manager is often a mixin of an authentication manager and
 # a security rules manager
-class SecurityManager(Authentification, HardcodedRules):
+class SecurityManager(Authentication, HardcodedRules):
     pass
 
 # ---------------------------------------------------------------------------

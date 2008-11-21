@@ -7,7 +7,7 @@
 # this distribution.
 #--
 
-"""Digest HTTP authentification of the users added.
+"""Digest HTTP authentication of the users added.
 
 First, log as the editor 'john / john'.
 Then try as the administrator 'admin / admin'.
@@ -173,9 +173,9 @@ class User(common.User):
 
 from nagare.security import digest_auth
 
-# Our ``Authentification`` class now inherites from the
-# ``digest_auth.Authentification`` 
-class Authentification(digest_auth.Authentification):
+# Our ``Authentication`` class now inherits from the
+# ``digest_auth.Authentication`` 
+class Authentication(digest_auth.Authentication):
     def get_password(self, username):
         return username
     
@@ -193,7 +193,7 @@ class HardcodedRules(common.Rules):
         return user.id == 'admin'
     
 
-class SecurityManager(Authentification, HardcodedRules):
+class SecurityManager(Authentication, HardcodedRules):
     pass
 
 # ---------------------------------------------------------------------------
@@ -201,7 +201,7 @@ class SecurityManager(Authentification, HardcodedRules):
 class WSGIApp(wsgi.WSGIApp):
     def __init__(self, app_factory):
         super(WSGIApp, self).__init__(app_factory)
-        # A digest authentification needs a private key
+        # A digest authentication needs a private key
         self.security = SecurityManager(realm='My wiki', private_key='0123456789')
         
 app = WSGIApp(lambda: component.Component(Wiki()))

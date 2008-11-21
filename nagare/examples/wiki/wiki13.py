@@ -7,7 +7,7 @@
 # this distribution.
 #--
 
-"""Form based authentification of the users added.
+"""Form based authentication of the users added.
 
 First, log as 'guest / guest'
 Then, log as the editor 'john / john'.
@@ -201,9 +201,9 @@ class User(common.User):
 
 from nagare.security import form_auth
 
-# Our ``Authentification`` class now inherites from the
-# ``form_auth.Authentification`` 
-class Authentification(form_auth.Authentification):
+# Our ``Authentication`` class now inherits from the
+# ``form_auth.Authentication`` 
+class Authentication(form_auth.Authentication):
     def get_password(self, username):
         return username
     
@@ -221,7 +221,7 @@ class HardcodedRules(common.Rules):
         return user.id == 'admin'
     
 
-class SecurityManager(Authentification, HardcodedRules):
+class SecurityManager(Authentication, HardcodedRules):
     pass
 
 # ---------------------------------------------------------------------------

@@ -196,7 +196,7 @@ class User(common.User):
 
 from nagare.security import form_auth
 
-class Authentification(form_auth.Authentification):
+class Authentication(form_auth.Authentication):
     def get_password(self, username):
         return username
     
@@ -221,7 +221,7 @@ class UserWithPermissionsRules(common.Rules):
         return user.has_permission(perm)
     
 
-class SecurityManager(Authentification, UserWithPermissionsRules):
+class SecurityManager(Authentication, UserWithPermissionsRules):
     pass
 
 # ---------------------------------------------------------------------------

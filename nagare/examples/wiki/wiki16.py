@@ -213,7 +213,7 @@ admin_role = ('wiki.admin', editor_role)
 
 from nagare.security import form_auth
 
-class Authentification(form_auth.Authentification):
+class Authentication(form_auth.Authentication):
     def get_password(self, username):
         return username
     
@@ -253,7 +253,7 @@ class Rules(common.Rules):
         return common.Denial()
 
 
-class SecurityManager(Authentification, Rules):
+class SecurityManager(Authentication, Rules):
     pass
 
 # ---------------------------------------------------------------------------
