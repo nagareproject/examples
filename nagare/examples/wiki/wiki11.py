@@ -168,7 +168,7 @@ from nagare.security import common
 
 # We define 3 classes:
 #
-#  - the ``User`` class defines the attributs of the users
+#  - the ``User`` class defines the attributes of the users
 #  - the ``Authentification`` class defines how the users are identified /
 #    authentified
 #  - the ``HardcodedRules`` class defines the mapping between the users and
@@ -218,7 +218,7 @@ class SecurityManager(Authentification, HardcodedRules):
 # ---------------------------------------------------------------------------
 
 # We create a new WSGIApp class that has our security manager as its `security`
-# attribut
+# attribute
 class WSGIApp(wsgi.WSGIApp):
     def __init__(self, app_factory):
         super(WSGIApp, self).__init__(app_factory)

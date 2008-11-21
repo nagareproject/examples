@@ -66,7 +66,7 @@ class PhotoCreator(editor.Editor):
 
     def commit(self, comp):
         """The form is validated if the ``title`` and ``img`` property are valid
-        (haven't a value to their ``error`` attribut)"""
+        (haven't a value to their ``error`` attribute)"""
         if self.is_validated(('title', 'img')):
             comp.answer((self.title(), self.img.value))
 

@@ -24,7 +24,7 @@ class Portal(object):
     """The ``Portal`` object is only a container"""
 
     def __init__(self):
-        """Each components to display is simply an attribut"""
+        """Each components to display is simply an attribute"""
         self.calc = component.Component(calculator.Calculator())
         self.counter = component.Component(counter.Counter1())
         self.tictactoe = component.Component(tictactoe.Task())
