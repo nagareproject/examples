@@ -187,7 +187,7 @@ from nagare.security import common
 
 class User(common.User):
     def __init__(self, id, permissions=()):
-        self.id = id
+        super(User, self).__init__(id)
         self.permissions = permissions
         
     def has_permission(self, perm):

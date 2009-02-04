@@ -195,9 +195,7 @@ from peak.rules import when
 from nagare.security import common
 
 class User(common.User):
-    def __init__(self, id):
-        self.id = id
-
+    pass
 
 from nagare.security import form_auth
 

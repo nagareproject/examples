@@ -192,7 +192,7 @@ def flatten(*args):
 # A user has now a list of roles
 class User(common.User):
     def __init__(self, id, roles=()):
-        self.id = id
+        super(User, self).__init__(id)
         self.roles = flatten(roles)
         
     def has_permission(self, permission):

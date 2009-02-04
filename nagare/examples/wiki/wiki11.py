@@ -175,9 +175,7 @@ from nagare.security import common
 #    the permissions
 
 class User(common.User):
-    def __init__(self, id):
-        self.id = id    # For this wiki application, a user has only an ``id``
-                        # (his name)
+    pass
 
 
 # We use the basic HTTP authentication to identify and authenticate the
