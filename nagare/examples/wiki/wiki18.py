@@ -7,46 +7,39 @@
 # this distribution.
 #--
 
-"""Form based authentication of the users added.
+"""More complex security rules: only the author can change a page content
 
-First, log as 'guest / guest'
-Then, log as the editor 'john / john'.
-Then try as the administrator 'admin / admin'.
+'guest / guest' is an editor but can't edit the 'WikiWiki' page
+'john / john' is an editor and the creator of the 'WikiWiki' page so he
+can edit it
+Then try as the administrator 'admin / admin' that can edit all the pages
 """
-
 from __future__ import with_statement
 
 import re
 import docutils.core
 
-from nagare import component, presentation, var, security, wsgi
+from nagare import component, presentation, var, security, wsgi, editor
+from nagare.database import session, query
 
-from wikidata import PageData
+from wikideclarative import PageData
 
 # ---------------------------------------------------------------------------
 
 class Login:
     pass
 
-# The login view now displays a form to log in
 @presentation.render_for(Login)
 def render(self, h, binding, *args):
     user = security.get_user()
     
     if not user:
-        # The user is not already logged
-        
-        # Display a form where the name and password fields are called
-        # ``__ac_name`` and ``__ac_password`` by default
         html = h.form(
                       'Login: ', h.input(name='__ac_name'), ' ',
                       'Password: ', h.input(type='password', name='__ac_password'), ' ',
                       h.input(type='submit', value='ok')
                      )
     else:
-        # User is logged
-
-        # Display his name and a link to be disconnected 
         html = (
                 'Welcome ', h.b(user.id), h.br,
                 h.a('logout').action(lambda: security.get_manager().logout())
@@ -58,23 +51,13 @@ def render(self, h, binding, *args):
 
 wikiwords = re.compile(r'\b([A-Z]\w+[A-Z]+\w+)')
 
-class Page(object):
-    def __init__(self, title):
-        self.title = title
-
-    def edit(self, comp):
-        content = comp.call(PageEditor(self))
-
-        if content is not None:
-            security.check_permissions('wiki.editor', self)            
-            page = PageData.get_by(pagename=self.title)
-            page.data = content
+class Page(PageData):
+    def __init__(self, pagename):
+        super(PageData).__init__(pagename, '', None)
 
 @presentation.render_for(Page)
 def render(self, h, comp, *args):
-    page = PageData.get_by(pagename=self.title)
-
-    content = docutils.core.publish_parts(page.data, writer_name='html')['html_body']
+    content = docutils.core.publish_parts(self.data, writer_name='html')['html_body']
     content = wikiwords.sub(r'<wiki>\1</wiki>', content)
     html = h.parse_htmlstring(content, fragment=True)[0]
 
@@ -85,35 +68,44 @@ def render(self, h, comp, *args):
     
     h << html
     
-    # We check the user has the ``wiki.editor`` permission on this page
-    # to display the "edit" link
     if security.has_permissions('wiki.editor', self):
-        h << h.a('Edit this page', href='page/'+self.title).action(lambda: self.edit(comp))
+        h << h.a('Edit this page', href='page/'+self.pagename).action(lambda: comp.call(PageEditor(comp())))
         
     return h.root
 
+# The meta data view now also displays the creator's name
 @presentation.render_for(Page, model='meta')
 def render(self, h, comp, *args):
-    return ('Viewing ', h.b(self.title), h.br, h.br,
-            'You can return to the ', h.a('FrontPage', href='page/FrontPage').action(lambda: comp.answer(u'FrontPage')))
+    h << h.span('Viewing ') << h.b(self.pagename) << h.br
+
+    if self.creator:
+        h << h.i('Created by ', self.creator) << h.br
+
+    h << h.br
+    h << 'You can return to the ' << h.a('FrontPage', href='page/FrontPage').action(lambda: comp.answer(u'FrontPage'))
+
+    return h.root
 
 # ---------------------------------------------------------------------------
 
-class PageEditor(object):
+class PageEditor(editor.Editor):
     def __init__(self, page):
-        self.page = page
+        super(PageEditor, self).__init__(page, ('pagename', 'data', 'creator'))
+
+    #@security.permissions('wiki.editor')
+    def commit(self, comp):
+        if super(PageEditor, self).commit(('data',)) and self.creator.value is None:
+            self.creator = security.get_user().id
+
+        comp.answer()
 
 @presentation.render_for(PageEditor)
 def render(self, h, comp, *args):
-    content = var.Var()
-
-    page = PageData.get_by(pagename=self.page.title)
-
     with h.form:
-        with h.textarea(rows='10', cols='40').action(content):
-            h << page.data
+        with h.textarea(rows='10', cols='40').action(self.data):
+            h << self.data()
         h << h.br
-        h << h.input(type='submit', value='Save').action(lambda: comp.answer(content()))
+        h << h.input(type='submit', value='Save').action(lambda: self.commit(comp))
         h << ' '
         h << h.input(type='submit', value='Cancel').action(comp.answer)
 
@@ -121,7 +113,7 @@ def render(self, h, comp, *args):
 
 @presentation.render_for(PageEditor, model='meta')
 def render(self, h, *args):
-    return ('Editing ', h.b(self.page.title))
+    return ('Editing ', h.b(self.pagename()))
 
 # ---------------------------------------------------------------------------
 
@@ -134,11 +126,12 @@ class Wiki(object):
         self.goto(u'FrontPage')
 
     def goto(self, title):
-        page = PageData.get_by(pagename=title)
+        page = query(Page).get(title)
         if page is None:
-            PageData(pagename=title, data='')
+            Page(title, '')
+            session.add(Page)
 
-        self.content.becomes(Page(title))
+        self.content.becomes(page)
 
 @presentation.render_for(Wiki)
 def render(self, h, comp, *args):
@@ -156,8 +149,6 @@ def render(self, h, comp, *args):
 
     h << self.content << h.hr
 
-    # We check the user has the ``wiki.admin`` permission on this page
-    # to display the "complete liste of pages" link
     if security.has_permissions('wiki.admin', self):
         h << 'View the ' << h.a('complete list of pages', href='all').action(lambda: self.goto(comp.call(self, model='all')))
     
@@ -167,7 +158,7 @@ def render(self, h, comp, *args):
 @security.permissions('wiki.admin')
 def render(self, h, comp, *args):
     with h.ul:
-        for page in PageData.query.order_by(PageData.pagename):
+        for page in query(Page).order_by(Page.pagename):
             with h.li:
                 h << h.a(page.pagename, href='page/'+page.pagename).action(lambda title=page.pagename: comp.answer(title))
 
@@ -179,7 +170,7 @@ def render(self, h, comp, *args):
 def init(self, url, *args):
     title = url[1]
     
-    page = PageData.get_by(pagename=title)
+    page = query(Page).get(title)
     if page is None:
         raise presentation.HTTPNotFound()
 
@@ -194,32 +185,63 @@ def init(self, url, comp, *args):
 from peak.rules import when
 from nagare.security import common
 
+def flatten(*args):
+    return sum([flatten(*x) if hasattr(x, '__iter__') else (x,) for x in args], ())
+
 class User(common.User):
-    pass
+    def __init__(self, id, roles=()):
+        super(User, self).__init__(id)
+        self.roles = flatten(roles)
+        
+    def has_permission(self, permission):
+        return permission in self.roles
+
+editor_role = ('wiki.editor',)
+admin_role = ('wiki.admin', editor_role)
 
 from nagare.security import form_auth
 
-# Our ``Authentication`` class now inherits from the
-# ``form_auth.Authentication`` 
 class Authentication(form_auth.Authentication):
     def get_password(self, username):
         return username
     
     def _create_user(self, username):
-        return None if username is None else User(username)
+        if username is None:
+            return None
+        
+        if (username == 'john') or (username == 'guest'):
+            return User(username, editor_role)
+        
+        if username == 'admin':
+            return User(username, admin_role)
+        
+        return User(username)
 
 
-class HardcodedRules(common.Rules):
-    @when(common.Rules.has_permission, "user and (perm == 'wiki.editor')")
-    def _(self, user, perm, subject):
-        return user.id in ('john', 'admin')
+class Rules(common.Rules):
+    # A administrator has all the permissions on the Wiki
+    @when(common.Rules.has_permission, (User, str, Wiki))
+    def _(next_method, self, user, perm, subject):
+        return user.has_permission('wiki.admin') or next_method(self, user, perm, subject)
 
-    @when(common.Rules.has_permission, "user and (perm == 'wiki.admin')")
-    def _(self, user, perm, subject):
-        return user.id == 'admin'
-    
+    # 1. An administrator has all the permissions on the pages
+    #
+    # 2. A user can modify a page if he has the 'wiki.editor' permission
+    #    and if he is the creator of the page, or if the page has no creator
+    #    yet (page just created)
+    @when(common.Rules.has_permission, (User, str, Page))
+    def _(self, user, perm, page):
+        if user.has_permission('wiki.admin'):
+            return True
 
-class SecurityManager(Authentication, HardcodedRules):
+        creator = page.creator
+        if user.has_permission(perm) and (perm != 'wiki.editor' or (creator is None) or (creator == user.id)):
+            return True
+        
+        return common.Denial()
+
+
+class SecurityManager(Authentication, Rules):
     pass
 
 # ---------------------------------------------------------------------------
@@ -228,5 +250,6 @@ class WSGIApp(wsgi.WSGIApp):
     def __init__(self, app_factory):
         super(WSGIApp, self).__init__(app_factory)
         self.security = SecurityManager()
-        
+
 app = WSGIApp(lambda: component.Component(Wiki()))
+

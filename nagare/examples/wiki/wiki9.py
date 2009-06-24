@@ -130,13 +130,13 @@ def init(self, url, *args):
     
     page = PageData.get_by(pagename=title)
     if page is None:
-        return presentation.NOT_FOUND
+        raise presentation.HTTPNotFound()
 
     self.goto(title)
     
 # Generic method to manage the '.../all' URL
 @presentation.init_for(Wiki, "len(url) and (url[0] == 'all')")
-def init(self, url, request, comp):
+def init(self, url, comp, *args):
     # The lambda expression is the same than in line #112, i.e we do exactly the
     # same action than when a user clicks on the 'complete list of pages' link
     #

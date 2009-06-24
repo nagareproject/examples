@@ -84,7 +84,7 @@ class FormEditor(editor.Editor):
           - ``v`` or raise an ``ValueError`` exception
         """
         if self.password() != v:
-            raise ValueError, 'Confirm password different than password'
+            raise ValueError('Confirm password different than password')
 
         return v
 

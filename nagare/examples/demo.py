@@ -9,6 +9,7 @@
 
 from __future__ import with_statement
 
+from webob import exc
 from nagare import component, presentation
 
 # Modules where the examples are located
@@ -190,17 +191,21 @@ def render(self, h, comp, *args):
 
     return h.root
 
-@presentation.init_for(Examples, "len(url) >= 2")
-def init(self, url, request, *args):
+# ---------------------------------------------------------------------
+
+@presentation.init_for(Examples, "http_method != 'GET'")
+def init(self, url, comp, http_method, request):
+    raise exc.HTTPMethodNotAllowed()
+
+@presentation.init_for(Examples, "len(url) >= 2 and http_method == 'GET'")
+def init(self, url, comp, http_method, request):
     (name, n) = url[:2]
     r = self.tree_view().select(self.tree_view, name, int(n)-1)
     if not r:
-        return presentation.NOT_FOUND
+        raise exc.HTTPNotFound()
     
     if len(url) > 2:
-        return self.example.init(url[2:], request)
-    
-    return presentation.FOUND
+        self.example.init(url[2:], http_method, request)
     
 # ---------------------------------------------------------------------
 

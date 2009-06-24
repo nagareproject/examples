@@ -169,12 +169,12 @@ def init(self, url, *args):
     
     page = PageData.get_by(pagename=title)
     if page is None:
-        return presentation.NOT_FOUND
+        raise presentation.HTTPNotFound()
 
     self.goto(title)
     
 @presentation.init_for(Wiki, "len(url) and (url[0] == 'all')")
-def init(self, url, request, comp):
+def init(self, url, comp, *args):
     component.call_wrapper(lambda: self.goto(comp.call(self, model='all')))
 
 # ---------------------------------------------------------------------------

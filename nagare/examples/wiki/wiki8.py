@@ -136,7 +136,7 @@ def init(self, url, *args):
     # Check if a page with the wanted title exists
     page = PageData.get_by(pagename=title)
     if page is None:
-        return presentation.NOT_FOUND
+        raise presentation.HTTPNotFound()
 
     # Go to the page
     self.goto(title)

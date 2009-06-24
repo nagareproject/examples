@@ -136,12 +136,12 @@ def render(self, h, comp, *args):
 
 # From a URL received, set the components
 @presentation.init_for(Gallery, "len(url) == 1")
-def init(self, url, request, comp):
+def init(self, url, comp, *args):
     # The URL received is the name of the photo
     photo_data = PhotoData.get_by(title=url[0])
     if not photo_data:
         # A photo with this name doesn't exist
-        return presentation.NOT_FOUND
+        raise presentation.HTTPNotFound()
     
     # Get the photo data and make a ``Photo`` component
     photo = component.Component(Photo(photo_data.id))
