@@ -24,11 +24,9 @@ def populate():
     page.pagename = u'FrontPage'
     page.data = u'Welcome to my *WikiWiki* !'
     page.creator = u'admin'
-    session.save(page)
     
     page = PageData()
     page.pagename = u'WikiWiki'
     page.data = u'On this *WikiWiki*, the page contents can be ' \
                  'written in `Restructured Text <http://docutils.sourceforge.net/rst.html>`_'
     page.creator = u'john'
-    session.save(page)
