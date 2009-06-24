@@ -264,4 +264,12 @@ def render(self, h, *args):
             h.a('--').action(ajax.Update(lambda h: str(self.v), self.decrease, div)),
            )
 
-examples += ('Asynchronous update of a HTML element', lambda: component.Component(Counter4(), model='without_id'))
+class App2:
+    def __init__(self):
+        self.counter = component.Component(Counter4(), model='without_id')
+
+@presentation.render_for(App2)
+def render(self, h, *args):
+    return self.counter.render(h)
+
+examples += ('Asynchronous update of a HTML element', App2)
