@@ -7,7 +7,7 @@
 # this distribution.
 #--
 
-VERSION='0.1.0'
+VERSION='0.1.1'
 
 from setuptools import setup, find_packages
 
