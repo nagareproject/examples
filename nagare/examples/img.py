@@ -29,7 +29,7 @@ class Image(object):
         self.title = title
         self.url = url
         
-    def send_image(self, h):
+    def send_image(self):
         """Read the image data
         
         In:

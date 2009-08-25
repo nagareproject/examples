@@ -26,10 +26,10 @@ class Photo(object):
     def title(self):
         return PhotoData.get(self.id).title
 
-    def img(self, h=None):
+    def img(self):
         return str(PhotoData.get(self.id).img)
 
-    def thumbnail(self, h=None):
+    def thumbnail(self):
         return str(PhotoData.get(self.id).thumbnail)
 
 @presentation.render_for(Photo, model='thumbnail')

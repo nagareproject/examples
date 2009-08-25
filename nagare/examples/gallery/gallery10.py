@@ -7,53 +7,44 @@
 # this distribution.
 #--
 
-"""Adding a bit of style : css and true generation of thumbnail added"""
+"""Adding significative URLs"""
 
 from __future__ import with_statement
 
 from nagare import presentation, component, editor, validator
+from nagare.database import session, query
 
-from gallerydata import *
+from elixir import *
+from gallerydata2 import __metadata__
 import thumb
 
-# ---------------------------------------------------------------------------
+class Photo(Entity):
+    using_options(autoload=False)
 
-class Photo(object):
-    def __init__(self, id):
-        self.id = id
-
-    @property
-    def title(self):
-        return PhotoData.get(self.id).title
-
-    def img(self):
-        return str(PhotoData.get(self.id).img)
-
-    def thumbnail(self):
-        return str(PhotoData.get(self.id).thumbnail)
+    title = Field(Unicode(100))
+    img = Field(BLOB)
+    thumbnail = Field(BLOB)
+    belongs_to('gallery', of_kind='Gallery')
 
 @presentation.render_for(Photo)
 def render(self, h, comp, *args):
-    img = h.img.action(self.img)
+    img = h.img.action(lambda h: str(self.img))
     return h.a(img).action(comp.answer)
 
 @presentation.render_for(Photo, model='thumbnail')
 def render(self, h, comp, *args):
     with h.div:
-        # As we have now true thumbnails, no more need to do a client-side
-        # resize of the image
-        h << h.img.action(self.thumbnail)
+        h << h.img.action(lambda h: str(self.thumbnail))
         h << h.br
         h << h.a(self.title).action(lambda: comp.answer(self))
-        h << h.i(' (%d octets)' % len(self.img()))
+        h << h.i(' (%d octets)' % len(self.img))
 
     return h.root
 
 
 class PhotoCreator(editor.Editor):
     def __init__(self):
-        self.title = editor.Property(None)
-        self.img = editor.Property(None)
+        super(PhotoCreator, self).__init__(Photo(), ('title', 'img'))
 
         self.title.validate(lambda t: validator.to_string(t).not_empty().to_string())
         self.img.validate(self.validate_img)
@@ -64,8 +55,11 @@ class PhotoCreator(editor.Editor):
         return img.file.read()
 
     def commit(self, comp):
-        if self.is_validated(('title', 'img')):
-            comp.answer((self.title(), self.img.value))
+        if super(PhotoCreator, self).commit(('title', 'img')):
+            photo = self.target
+
+            photo.thumbnail = thumb.thumbnail(self.img.value)
+            comp.answer(photo)
 
 @presentation.render_for(PhotoCreator)
 def render(self, h, comp, *args):
@@ -78,36 +72,30 @@ def render(self, h, comp, *args):
                 h << h.td('Image') << h.td(':') << h.td(h.input(type='file').action(self.img).error(self.img.error))
 
             with h.tr:
-                h << h.td() << h.td()
+                h << h.td << h.td
                 with h.td:
-                    h << h.input(type='submit', value='Add', id='submitbutton').action(lambda: self.commit(comp))
+                    h << h.input(type='submit', value='Add').action(lambda: self.commit(comp))
                     h << ' '
-                    h << h.input(type='submit', value='Cancel', id='submitbutton').action(comp.answer)
+                    h << h.input(type='submit', value='Cancel').action(comp.answer)
 
     return h.root
 
 # ---------------------------------------------------------------------------
 
-class Gallery(object):
+class Gallery(Entity):
+    name = Field(Unicode(40))
+    has_many('photos', of_kind='Photo')
+
     def __init__(self, name):
         self.name = name
-        if GalleryData.get_by(name=name) is None:
-            GalleryData(name=name)
-            session.flush()
 
     def add_photo(self, comp):
-        r = comp.call(PhotoCreator())
-        if r is not None:
-            (title, img) = r
-
-            gallery = GalleryData.get_by(name=self.name)
-            
-            # Generating a true thumbnail with ``thumb.thumbnail()``
-            gallery.photos.append(PhotoData(title=title, img=img, thumbnail=thumb.thumbnail(img)))
+        photo = comp.call(PhotoCreator())
+        if photo is not None:
+            self.photos.append(photo)
 
 @presentation.render_for(Gallery)
 def render(self, h, comp, *args):
-    # Adding some css
     h.head.css('gallery', '''
     ul.photo_list {
         list-style: none;
@@ -128,14 +116,30 @@ def render(self, h, comp, *args):
         h << h.br
 
         with h.ul(class_='photo_list'):
-            for p in GalleryData.get_by(name=self.name).photos:
-                photo = component.Component(Photo(p.id))
+            for photo in self.photos:
+                # The url for a photo is its title
+                photo = component.Component(photo, url=photo.title)
                 photo.on_answer(comp.call)
 
                 h << h.li(photo.render(h, model='thumbnail'))
 
     return h.root
 
+# From a URL received, set the components
+@presentation.init_for(Gallery, "len(url) == 1")
+def init(self, url, comp, *args):
+    # The URL received is the name of the photo
+    photo = query(Photo).filter_by(title=url[0]).first()
+    if not photo:
+        # A photo with this name doesn't exist
+        raise presentation.HTTPNotFound()
+    
+    # Temporary change the Gallery (the ``comp``) with the photo
+    component.call_wrapper(lambda: comp.call(component.Component(photo)))
+
 # ---------------------------------------------------------------------------
 
-app = lambda: Gallery(u'MyGallery2')
+app = lambda: query(Gallery).filter_by(name=u'MyGallery').one()
+
+def populate():
+    session.add(Gallery(name=u'MyGallery'))

@@ -25,10 +25,10 @@ class Photo(object):
     def title(self):
         return PhotoData.get(self.id).title
 
-    def img(self, h=None):
+    def img(self):
         return str(PhotoData.get(self.id).img)
 
-    def thumbnail(self, h=None):
+    def thumbnail(self):
         return str(PhotoData.get(self.id).thumbnail)
 
 @presentation.render_for(Photo)
@@ -57,7 +57,7 @@ class PhotoCreator(editor.Editor):
     def commit(self, comp):
         """After the submission of the form, the PhotoCreator answers the
            tuple (title of the photo, image data)"""
-        comp.answer((self.title(), self.img.value))
+        comp.answer((self.title(), self.img.value.file.read()))
 
 @presentation.render_for(PhotoCreator)
 def render(self, h, comp, *args):

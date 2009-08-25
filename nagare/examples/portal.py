@@ -20,6 +20,8 @@ from nagare.examples import counter, calculator, tictactoe
 from nagare.examples.wiki import wiki9
 from nagare.examples.gallery import gallery7
 
+from jewels.app import Task as Jewels
+
 class Portal(object):
     """The ``Portal`` object is only a container"""
 
@@ -29,6 +31,7 @@ class Portal(object):
         self.counter = component.Component(counter.Counter1())
         self.tictactoe = component.Component(tictactoe.Task())
         self.wiki = component.Component(wiki9.app())
+        self.jewels = component.Component(Jewels(15, 10))
         self.gallery = component.Component(gallery7.app())
 
 
@@ -72,10 +75,18 @@ def render(self, h, *args):
             with h.div(class_='portlet'):
                 h << h.div('TicTacToe', class_='portletHandle')
                 h << self.tictactoe.render(xhtml.AsyncRenderer(h))             
-        
+
             with h.div(class_='portlet'):
                 h << h.div('Wiki', class_='portletHandle')
                 h << self.wiki.render(xhtml.AsyncRenderer(h))
+                h << h.p(style='clear: both')
+
+            with h.div(class_='portlet'):
+                h << h.div('Jewels', class_='portletHandle')
+
+                h.head.css_url('jewels.css')
+                h << h.div(self.jewels.render(xhtml.AsyncRenderer(h)), class_='jewels')
+
                 h << h.p(style='clear: both')
 
         with h.div(class_='portletColumn'):

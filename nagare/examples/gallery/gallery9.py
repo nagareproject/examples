@@ -7,45 +7,44 @@
 # this distribution.
 #--
 
-"""Adding a bit of style : css and true generation of thumbnail added"""
+"""Adding significative URLs"""
 
 from __future__ import with_statement
 
-from nagare import presentation, component, editor, validator
+from sqlalchemy import Column, Unicode, BLOB, ForeignKey, Integer
+from sqlalchemy.orm import relation
 
-from gallerydata import *
+from nagare import presentation, component, editor, validator
+from nagare.database import session, query
+
+from gallerydeclarative import Entity
 import thumb
 
-# ---------------------------------------------------------------------------
+class Photo(Entity):
+    __tablename__ = 'photo_base'
 
-class Photo(object):
-    def __init__(self, id):
-        self.id = id
+    title = Column(Unicode(100), primary_key=True)
+    img = Column(BLOB)
+    thumbnail = Column(BLOB)
+    gallery_id = Column(Integer, ForeignKey('gallery_data.name'))
 
-    @property
-    def title(self):
-        return PhotoData.get(self.id).title
-
-    def img(self):
-        return str(PhotoData.get(self.id).img)
-
-    def thumbnail(self):
-        return str(PhotoData.get(self.id).thumbnail)
+    def __init__(self, title, img, thumbnail):
+        self.title = title
+        self.img = img
+        self.thumbnail = thumbnail
 
 @presentation.render_for(Photo)
 def render(self, h, comp, *args):
-    img = h.img.action(self.img)
+    img = h.img.action(lambda h: str(self.img))
     return h.a(img).action(comp.answer)
 
 @presentation.render_for(Photo, model='thumbnail')
 def render(self, h, comp, *args):
     with h.div:
-        # As we have now true thumbnails, no more need to do a client-side
-        # resize of the image
-        h << h.img.action(self.thumbnail)
+        h << h.img.action(lambda h: str(self.thumbnail))
         h << h.br
         h << h.a(self.title).action(lambda: comp.answer(self))
-        h << h.i(' (%d octets)' % len(self.img()))
+        h << h.i(' (%d octets)' % len(self.img))
 
     return h.root
 
@@ -88,26 +87,26 @@ def render(self, h, comp, *args):
 
 # ---------------------------------------------------------------------------
 
-class Gallery(object):
+class Gallery(Entity):
+    __tablename__ = 'gallery_data'
+
+    name = Column(Unicode(40), primary_key=True)
+    photos = relation('Photo', backref='gallery')
+
     def __init__(self, name):
         self.name = name
-        if GalleryData.get_by(name=name) is None:
-            GalleryData(name=name)
-            session.flush()
 
     def add_photo(self, comp):
         r = comp.call(PhotoCreator())
         if r is not None:
             (title, img) = r
 
-            gallery = GalleryData.get_by(name=self.name)
-            
-            # Generating a true thumbnail with ``thumb.thumbnail()``
-            gallery.photos.append(PhotoData(title=title, img=img, thumbnail=thumb.thumbnail(img)))
+            photo = Photo(title, img, thumbnail=thumb.thumbnail(img))
+            self.photos.append(photo)
+            session.add(photo)
 
 @presentation.render_for(Gallery)
 def render(self, h, comp, *args):
-    # Adding some css
     h.head.css('gallery', '''
     ul.photo_list {
         list-style: none;
@@ -128,14 +127,27 @@ def render(self, h, comp, *args):
         h << h.br
 
         with h.ul(class_='photo_list'):
-            for p in GalleryData.get_by(name=self.name).photos:
-                photo = component.Component(Photo(p.id))
+            for photo in self.photos:
+                # The url for a photo is its title
+                photo = component.Component(photo, url=photo.title)
                 photo.on_answer(comp.call)
 
                 h << h.li(photo.render(h, model='thumbnail'))
 
     return h.root
 
+# From a URL received, set the components
+@presentation.init_for(Gallery, "len(url) == 1")
+def init(self, url, comp, *args):
+    # The URL received is the name of the photo
+    photo = query(Photo).get(url[0])
+    if not photo:
+        # A photo with this name doesn't exist
+        raise presentation.HTTPNotFound()
+    
+    # Temporary change the Gallery (the ``comp``) with the photo
+    component.call_wrapper(lambda: comp.call(component.Component(photo)))
+
 # ---------------------------------------------------------------------------
 
-app = lambda: Gallery(u'MyGallery2')
+app = lambda: query(Gallery).get(u'MyGallery')

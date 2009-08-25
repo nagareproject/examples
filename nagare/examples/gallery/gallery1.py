@@ -31,11 +31,11 @@ class Photo(object):
         """Return the title of the photo"""
         return PhotoData.get(self.id).title
 
-    def img(self, h=None):
+    def img(self):
         """Return the image data"""
         return str(PhotoData.get(self.id).img)
 
-    def thumbnail(self, h=None):
+    def thumbnail(self):
         """Return the thumbnail data"""
         return str(PhotoData.get(self.id).thumbnail)
 
