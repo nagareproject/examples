@@ -1,5 +1,5 @@
 #--
-# Copyright (c) 2008, 2009 Net-ng.
+# Copyright (c) 2008, 2009, 2010 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
@@ -20,7 +20,7 @@ from nagare.examples import counter, calculator, tictactoe
 from nagare.examples.wiki import wiki9
 from nagare.examples.gallery import gallery7
 
-from jewels.app import Task as Jewels
+#from jewels.app import Task as Jewels
 
 class Portal(object):
     """The ``Portal`` object is only a container"""
@@ -43,19 +43,19 @@ def render(self, h, *args):
     h.head.javascript_url(ajax.YUI_EXTERNAL_PREFIX + '/yahoo-dom-event/yahoo-dom-event.js')
     h.head.javascript_url(ajax.YUI_EXTERNAL_PREFIX + '/dragdrop/dragdrop.js')
     h.head.javascript_url(ajax.YUI_EXTERNAL_PREFIX + '/dom/dom.js')
-    
+
     h.head.javascript_url('portal.js')
     h.head.css_url('portal.css')
-    
+
     h.head << h.head.title('Portal demonstration')
-    
+
     with h.div(id='portal', class_='FixedWidth'):
 
         # Each column must be a <div> with the class 'portletColumn'
         with h.div(class_='portletColumn'):
             # Each portlet must be a <div> with the class 'portlet'
             with h.div(class_='portlet'):
-                # Each D&D portlet handle must be a <div> with the class 'portletHandle' 
+                # Each D&D portlet handle must be a <div> with the class 'portletHandle'
                 h << h.div('About', class_='portletHandle')
                 with h.div:
                     h << h.p('This is a simple prototype of a dashboard that allows you to reorder containers much like iGoogle')
@@ -70,11 +70,11 @@ def render(self, h, *args):
             with h.div(class_='portlet'):
                 h << h.div('RPN Calculator', class_='portletHandle')
                 h << self.calc.render(xhtml.AsyncRenderer(h))
-        
+
         with h.div(class_='portletColumn'):
             with h.div(class_='portlet'):
                 h << h.div('TicTacToe', class_='portletHandle')
-                h << self.tictactoe.render(xhtml.AsyncRenderer(h))             
+                h << self.tictactoe.render(xhtml.AsyncRenderer(h))
 
             with h.div(class_='portlet'):
                 h << h.div('Wiki', class_='portletHandle')
@@ -97,7 +97,7 @@ def render(self, h, *args):
 
         # Initialize the portal
         h << h.script('portalInit("portal")', type='text/javascript')
-            
+
     return h.root
 
 # ---------------------------------------------------------------------------
