@@ -27,13 +27,14 @@ setup(
       zip_safe = False,
       dependency_links = ('http://www.nagare.org/download/',),
       install_requires = ('nagare[database]>0.2.0', 'docutils', 'PIL'),
-      namespace_packages = ('nagare.examples',),
+      namespace_packages = ('nagare', 'nagare.examples',),
       entry_points = '''
       [nagare.applications]
       demo = nagare.examples.demo:app
       wiki = nagare.examples.wiki.wiki9:app
       gallery = nagare.examples.gallery.gallery7:app
       portal = nagare.examples.portal:app
+      chat = nagare.examples.chat:app
       ''',
       classifiers = (
         'Development Status :: 4 - Beta',
