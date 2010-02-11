@@ -1,0 +1,29 @@
+.jewels table {
+	border: 2px solid black;
+	border-collapse: collapse;
+}
+
+.jewels td {
+	text-align: center;
+    width: 28px;
+    height: 28px;
+}
+
+.jewels img {
+	border: none;
+	margin: 0;
+    padding: 0;
+}
+
+.jewels td.cell0 {
+	background-color: #224466;
+}
+
+.jewels td.cell1 {
+	background-color: #336699;
+}
+
+.jewels h1 {
+	font-size: 14px;
+	color: black;
+}

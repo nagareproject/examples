@@ -19,8 +19,7 @@ from nagare.namespaces import xhtml
 from nagare.examples import counter, calculator, tictactoe
 from nagare.examples.wiki import wiki9
 from nagare.examples.gallery import gallery7
-
-#from jewels.app import Task as Jewels
+from nagare.examples.jewels import Jewels
 
 class Portal(object):
     """The ``Portal`` object is only a container"""
