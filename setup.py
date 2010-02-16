@@ -16,7 +16,12 @@ setup(
       version = VERSION,
       author = 'Alain Poirier',
       author_email = 'alain.poirier at net-ng.com',
-      description = 'Demo and examples for the Nagare web framework',
+      description = '''Demo and examples for the Nagare web framework
+
+      Read the `installation document <http://www.nagare.org/trac/wiki/DemoInstallation>`_
+      to do a standard installation or a developer installation from the
+      `Nagare subversion repository <svn://www.nagare.org/trunk/nagare/examples#egg=nagare.examples-dev>`_
+      ''',
       license = 'BSD',
       keywords = 'web wsgi framework sqlalchemy elixir seaside continuation ajax stackless',
       url = 'http://www.nagare.org',
