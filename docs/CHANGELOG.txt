@@ -1,0 +1,16 @@
+Nagare Examples Changelog
+=========================
+
+0.2.0
+-----
+
+New features
+~~~~~~~~~~~~
+
+  - ``jewels`` game example added
+  - ``chat`` comet Chat example added
+
+0.1.0
+-----
+
+Initial release
