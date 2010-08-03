@@ -16,7 +16,6 @@ from __future__ import with_statement
 import operator
 
 from nagare import component, presentation, util
-from nagare.namespaces import xhtml
 
 # ---------------------------------------------------------------------------
 
@@ -137,7 +136,7 @@ class App(object):
 
 @presentation.render_for(App)
 def render(self, h, *args):
-    return self.inner.render(xhtml.AsyncRenderer(h))
+    return self.inner.render(h.AsyncRenderer())
 
 examples += ('Automatic use of asynchronous requests/updates', App)
 
@@ -169,7 +168,7 @@ def render(self, h, binding, *args):
                 h << h.td(self.left)
                 
                 # The ``right`` component is rendered with an asynchronous HTML renderer
-                h << h.td(self.right.render(xhtml.AsyncRenderer(h)))
+                h << h.td(self.right.render(h.AsyncRenderer()))
 
     return h.root
 

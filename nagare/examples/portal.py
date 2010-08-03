@@ -14,7 +14,6 @@ components in a portal-like container
 from __future__ import with_statement
 
 from nagare import component, presentation, ajax
-from nagare.namespaces import xhtml
 
 from nagare.examples import counter, calculator, tictactoe
 from nagare.examples.wiki import wiki9
@@ -64,34 +63,34 @@ def render(self, h, *args):
             with h.div(class_='portlet'):
                 h << h.div('Counter', class_='portletHandle')
                 # Render the default asynchronous view of the component
-                h << self.counter.render(xhtml.AsyncRenderer(h))
+                h << self.counter.render(h.AsyncRenderer())
 
             with h.div(class_='portlet'):
                 h << h.div('RPN Calculator', class_='portletHandle')
-                h << self.calc.render(xhtml.AsyncRenderer(h))
+                h << self.calc.render(h.AsyncRenderer())
 
         with h.div(class_='portletColumn'):
             with h.div(class_='portlet'):
                 h << h.div('TicTacToe', class_='portletHandle')
-                h << self.tictactoe.render(xhtml.AsyncRenderer(h))
+                h << self.tictactoe.render(h.AsyncRenderer())
 
             with h.div(class_='portlet'):
                 h << h.div('Wiki', class_='portletHandle')
-                h << self.wiki.render(xhtml.AsyncRenderer(h))
+                h << self.wiki.render(h.AsyncRenderer())
                 h << h.p(style='clear: both')
 
             with h.div(class_='portlet'):
                 h << h.div('Jewels', class_='portletHandle')
 
                 h.head.css_url('jewels.css')
-                h << h.div(self.jewels.render(xhtml.AsyncRenderer(h)), class_='jewels')
+                h << h.div(self.jewels.render(h.AsyncRenderer()), class_='jewels')
 
                 h << h.p(style='clear: both')
 
         with h.div(class_='portletColumn'):
             with h.div(class_='portlet'):
                 h << h.div('Photos gallery', class_='portletHandle')
-                h << self.gallery.render(xhtml.AsyncRenderer(h))
+                h << self.gallery.render(h.AsyncRenderer())
                 h << h.p(style='clear: both')
 
         # Initialize the portal

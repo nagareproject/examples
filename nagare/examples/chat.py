@@ -10,7 +10,6 @@
 from __future__ import with_statement
 
 from nagare import presentation, component, comet, var, ajax
-from nagare.namespaces import xhtml
 
 # -----------------------------------------------------------------------------
 
@@ -153,7 +152,7 @@ def render(self, h, *args):
     h << component.Component(comet.channels[self.channel_id])
 
     # Asynchronous (Ajax) rendering of the user interaction form
-    h << self.interaction.render(xhtml.AsyncRenderer(h))
+    h << self.interaction.render(h.AsyncRenderer())
 
     # This list will be filled by the received messages
     h << h.ul(id='msgs')

@@ -13,8 +13,7 @@ callbacks
 
 from __future__ import with_statement
 
-from nagare import component, presentation, var
-from nagare.namespaces import xhtml
+from nagare import component, presentation
 
 examples = ()
 
@@ -174,14 +173,14 @@ def render(self, h, *args):
         with h.table(width='100%'):
             with h.tr:
                 h << h.td(h.u('Synchronous'))
-                h << h.td(h.u('Asynchronous'))
+                h << h.td(h.u('Asynchronous-'))
                 
             with h.tr:
                 # The ``counter1`` component is rendered with a standard HTML renderer
                 h << h.td(self.counter1)
 
                 # The ``counter2`` component is rendered with an asynchronous HTML renderer
-                h << h.td(self.counter2.render(xhtml.AsyncRenderer(h)))
+                h << h.td(self.counter2.render(h.AsyncRenderer()))
 
     return h.root
 
