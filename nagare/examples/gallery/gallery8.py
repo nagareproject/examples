@@ -133,4 +133,4 @@ def init(self, url, comp, *args):
 app = lambda: query(Gallery).filter_by(name=u'MyGallery').one()
 
 def populate():
-    session.add(Gallery(name=u'MyGallery'))
+    database.session.add(Gallery(name=u'MyGallery'))

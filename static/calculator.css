@@ -1,0 +1,41 @@
+div.calculator {
+    width: 221px;
+    height: 240px;
+    font-family: arial;
+    background-image: url(background_calc.png);
+    padding-top: 10px;
+}
+
+div.calculator_display {
+    width: 198px;
+    height: 45px;
+    line-height: 45px;
+    margin: auto;
+    background:url(lcd.png) no-repeat top center;
+    font-size: 24px;
+    text-align: right;
+    padding-right: 10px;
+}
+
+div.calculator table {
+    margin: auto;
+    border-collapse: collapse;
+}
+
+div.calculator table td {
+    padding: 0;
+    margin: 0;
+}
+
+div.calculator table a {
+    display: inline-block;
+    width: 35px;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+    text-decoration: none;
+    margin: 1px;
+    font-size: 24px;
+    background-image: url(button.png);
+}
+

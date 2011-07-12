@@ -131,7 +131,7 @@ class Wiki(object):
         page = query(Page).get(title)
         if page is None:
             Page(title, '')
-            session.add(Page)
+            database.session.add(Page)
 
         self.content.becomes(page)
 
@@ -263,9 +263,9 @@ Mapper(Page, wikialchemy.page_data)
 
 def populate():
     page = Page(u'FrontPage', u'Welcome to my *WikiWiki* !', u'admin')
-    session.add(page)
+    database.session.add(page)
 
     page = Page(u'WikiWiki', u'On this *WikiWiki*, the page contents can be '
                  'written in `Restructured Text <http://docutils.sourceforge.net/rst.html>`_',
                  u'john')
-    session.add(page)
+    database.session.add(page)

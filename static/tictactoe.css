@@ -1,0 +1,21 @@
+.tictactoe {
+    border-spacing: 0;
+    border-collapse: separate;
+}
+
+.tictactoe td {
+    width: 70px;
+    height: 70px;
+    padding: 0;
+    background-color: #000000;
+    color: #ffffff;
+    border: 2px solid white;
+    font-family: arial;
+    font-size: 40px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.tictactoe td a:hover {
+    color: #F7F3E8;
+}

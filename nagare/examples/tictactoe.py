@@ -71,14 +71,16 @@ def render(self, h, comp, *args):
     Return:
       - the view
     """
-    with h.table(border=1, cellpadding=3, cellspacing=0):
+    h.head.css_url('tictactoe.css')
+
+    with h.table(class_='tictactoe'):
         i = 0
         for row in zip(self._board[::3], self._board[1::3], self._board[2::3]):
             with h.tr:
                 for x in row:
                     with h.td:
                         if x == 0:
-                            h << h.a('_').action(lambda i=i: comp.answer(i))
+                            h << h.a('-').action(lambda i=i: comp.answer(i))
                         else:
                             h << ('X' if x==1 else 'O')
 
@@ -96,7 +98,7 @@ class Task(component.Task):
         while True:
             # 1. Create the board
             board = TicTacToe()
-    
+
             # 2. Ask the names of the players
             players = (comp.call(util.Ask('Player #1')), comp.call(util.Ask('Player #2')))
     
@@ -156,19 +158,19 @@ def render(self, h, binding, *args):
     self.nb_display += 1
 
     with h.div:
-        h << 'Nb displays: ' << self.nb_display << h.br << h.br
+        h << h.div('Full page generations: ',  self.nb_display)
 
-        with h.table(width='100%'):
-            with h.tr:
-                h << h.td(h.u('Synchronous'))
-                h << h.td(h.u('Asynchronous'))
-                
-            with h.tr:
-                # The ``left`` component is rendered with a standard HTML renderer
-                h << h.td(self.left)
-                
-                # The ``right`` component is rendered with an asynchronous HTML renderer
-                h << h.td(self.right.render(h.AsyncRenderer()))
+        with h.div(style='float: left'):
+            h << h.div('Synchronous', style='text-align: center; margin-top: 10px')
+
+            # The ``left`` component is rendered with a standard HTML renderer
+            h << self.left
+
+        with h.div(style='float: right'):
+            h << h.div('Asynchronous', style='text-align: center; margin-top: 10px')
+
+            # The ``right`` component is rendered with an asynchronous HTML renderer
+            h << h.td(self.right.render(h.AsyncRenderer()))
 
     return h.root
 

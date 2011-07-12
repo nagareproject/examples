@@ -3,71 +3,76 @@
 //   http://skypoetsworld.blogspot.com/2007/11/igoogle-and-newsvine-dashboards.html
 //--
 
-var container;
+var Dom = YAHOO.util.Dom
+
 var marker = document.createElement("div");
+Dom.addClass(marker, "marker")
 
-function startDrag(x, y) {
-	var dragEl = this.getDragEl();
-	var el = this.getEl();
-	container = el.parentNode;
+function start_drag(x, y) {
+    var el = this.getEl();
+    var dragEl = this.getDragEl();
+    var region = Dom.getRegion(el);
 
-	el.style.display = "none";
+    dragEl.innerHTML = el.innerHTML;
 
-	dragEl.style.zIndex = 1;
-	dragEl.innerHTML = el.innerHTML;
-	dragEl.style.backgroundColor = "#fff";
+    Dom.setStyle(dragEl, "opacity", 0.5);
+    Dom.setStyle(dragEl, "font-size", "12px");
+    Dom.setStyle(dragEl, "height", region.height-10+"px");
+    Dom.setStyle(dragEl, "width", region.width-10+"px");
+    Dom.setStyle(dragEl, "border", "0");
 
-	marker.style.display = "none";
-	marker.style.height = YAHOO.util.Dom.getStyle(dragEl, "height");
-	marker.style.width = YAHOO.util.Dom.getStyle(dragEl, "width");
-	marker.style.margin = "5px";
-	marker.style.marginBottom = "20px";
-	marker.style.border = "2px dashed #7e7e7e";
-	marker.style.display= "block";
+    Dom.setStyle(marker, "height", region.height-14+"px");
+    Dom.setStyle(marker, "width", region.width-14+"px");
 
-	container.insertBefore(marker, el);
+    el.parentNode.replaceChild(marker, el);
 }
 
-function onDragEnter(e, id) {
-	var el = document.getElementById(id);
+function end_drag(e, id) {
+    var dragEl = this.getDragEl()
+    Dom.batch(Dom.getChildren(dragEl), function (c) { dragEl.removeChild(c) })
 
-	if (YAHOO.util.Dom.hasClass(el, "portletColumn")) {
-		el.appendChild(marker);
-	} else {
-		container = el.parentNode;
-		container.insertBefore(marker, el);
-	}
+    marker.parentNode.replaceChild(this.getEl(), marker);
 }
 
-function endDrag(e, id) {
-	var el = this.getEl();
-	
-	var dragEl = this.getDragEl();
-	while(dragEl.hasChildNodes()) dragEl.removeChild(dragEl.firstChild);
-	
-	try {
-		marker = container.replaceChild(el, marker);
-	} catch(err) {
-		marker = marker.parentNode.replaceChild(el, marker);
-	}
-	el.style.display = "block";
+function init_portlet(p) {
+    var handler = Dom.getElementsByClassName("portlet_handle", "div", p)[0];
+
+    if(handler) {
+        var drag = new YAHOO.util.DDProxy(p);
+
+        drag.setHandleElId(handler);
+
+        drag.startDrag = start_drag;
+        drag.onDragEnter = function (e, id) { Dom.insertBefore(marker, id) };
+        drag.endDrag = end_drag;
+    }
 }
 
-function initColumn(c) {
-	new YAHOO.util.DDTarget(c, "Group1");
+function init_portal() {
+    Dom.batch(Dom.getElementsByClassName("drop_zone"), function (zone) { new YAHOO.util.DDTarget(zone) });
+    Dom.batch(Dom.getElementsByClassName("portlet"), init_portlet);
 }
 
-function initPortlet(p) {
-	var drag = new YAHOO.util.DDProxy(p, "Group1");
-	drag.setHandleElId(YAHOO.util.Dom.getElementsByClassName("portletHandle", "div", p)[0]);
-	
-	drag.startDrag = startDrag;
-	drag.onDragEnter = onDragEnter;
-	//drag.onDragOut = onDragOut;
-	drag.endDrag = endDrag;
+/* -------------------------------------------------------------------------- */
+
+function set_description_display(description, display) {
+    Dom.setStyle(Dom.get("description_"+description), "display", display);
 }
 
-function portalInit(p) {
-	YAHOO.util.Dom.batch(YAHOO.util.Dom.getElementsByClassName("portletColumn", "div", p), initColumn);
-	YAHOO.util.Dom.batch(YAHOO.util.Dom.getElementsByClassName("portlet", "div", p), initPortlet);
+function init_sourceviewer() {
+    var markers = Dom.getElementsByClassName("highlight_block_marker");
+
+    YAHOO.util.Event.on(markers, "mouseover", function (e) {
+        var name = this.getAttribute("name");
+
+        Dom.addClass(Dom.getElementsByClassName("block_"+name), "highlighted_line");
+        set_description_display(name, "block");
+    });
+
+    YAHOO.util.Event.on(markers, "mouseout", function (e) {
+        var name = this.getAttribute("name");
+
+        Dom.removeClass(Dom.getElementsByClassName("block_"+name), "highlighted_line");
+        set_description_display(name, "none");
+    });
 }

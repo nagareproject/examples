@@ -148,14 +148,15 @@ def render(self, h, *args):
     # Inclusion of the translated ``append_msg`` function
     h.head << h.head.script(ajax.py2js(append_msg, h))
 
-    # Automatic inclusion of the javascript Comet functions
-    h << component.Component(comet.channels[self.channel_id])
+    with h.div:
+        # Automatic inclusion of the javascript Comet functions
+        h << component.Component(comet.channels[self.channel_id])
 
-    # Asynchronous (Ajax) rendering of the user interaction form
-    h << self.interaction.render(h.AsyncRenderer())
+        # Asynchronous (Ajax) rendering of the user interaction form
+        h << self.interaction.render(h.AsyncRenderer())
 
-    # This list will be filled by the received messages
-    h << h.ul(id='msgs')
+        # This list will be filled by the received messages
+        h << h.ul(id='msgs')
 
     return h.root
 

@@ -36,18 +36,18 @@ class Form(object):
 
 class FormEditor(editor.Editor):
     """The form editor"""
-    
-    # The attributes of the target object, to edit 
+
+    # The attributes of the target object, to edit
     fields = ('age', 'area', 'big', 'medium', 'small', 'gender', 'color', 'password')
 
     def __init__(self, target):
         """Initialization
-        
+
         Create a ``editor.property`` for each ``self.fields`` of the target object
-        
+
         In:
           - ``target`` -- the object to edit
-        """ 
+        """
         super(FormEditor, self).__init__(target, self.fields)
 
         # Set the conversion and validation rules on the properties
@@ -56,30 +56,27 @@ class FormEditor(editor.Editor):
 
         # A property can also be manually created
         self.file = editor.Property().validate(self.validate_file)
-        
+
         # An editor can have more properties than the attributes of the target object
         self.confirm = editor.Property('').validate(self.validate_confirm)
 
     def validate_file(self, f):
         """A file is uploaded
-        
+
         In:
           - ``f`` -- file object
         """
         if isinstance(f, basestring):
             return None
-        
-        print 'File', f.filename
-        print 'Content', f.value
-        
+
         return f.value
-        
+
     def validate_confirm(self, v):
         """Validation of 2 related fields
-        
+
         In:
           - ``v`` -- value of the ``confirm`` property
-          
+
         Return:
           - ``v`` or raise an ``ValueError`` exception
         """
@@ -96,7 +93,7 @@ class FormEditor(editor.Editor):
         # If they are all valid, commit the ``self.fields`` values and the
         # uploaded file content if it exits
         f = self.file.value
-        
+
         if super(FormEditor, self).commit(self.fields, ('confirm',)) and f:
             self.target.file = f
 
@@ -107,7 +104,7 @@ class FormEditor(editor.Editor):
         self.big(False)
         self.medium(False)
         self.small(False)
-        
+
         self.color([])
 
 # ---------------------------------------------------------------------------
@@ -115,7 +112,7 @@ class FormEditor(editor.Editor):
 # This example illustrates:
 #
 #  - the use of an intermediary editor object between the inputs received and
-#    the target object. 
+#    the target object.
 #  - the association of validation methods to editor properties
 #  - the highlighting of erroneous fields
 #
@@ -128,13 +125,13 @@ def render(self, h, *args):
 
     # The ``pre_action`` of the ``<form>`` element is used to reset some data
     with h.form.pre_action(self.reset_values).post_action(self.commit):
-        
+
         h << 'Age (between 10 and 50): ' << h.input(value=self.age()).action(self.age).error(self.age.error)
         h << h.br
 
         with h.fieldset:
             h << h.legend('A set of controls')
-            
+
             h << 'A text (use only "[a-d]" characters):'
             h << h.textarea(self.area(), rows='2', cols='40').action(self.area).error(self.area.error)
             h << h.br << h.br
@@ -148,7 +145,7 @@ def render(self, h, *args):
             h << h.input(type='radio', name='gender').selected(self.gender()=='male').action(lambda: self.gender('male'))
             h << ' Female'
             h << h.input(type='radio', name='gender').selected(self.gender()=='female').action(lambda: self.gender('female'))
-            
+
         with h.select(multiple='multiple').action(self.color):
             with h.optgroup(label='Colors'):
                 h << h.option('blue', value='blue').selected(self.color())
@@ -162,7 +159,7 @@ def render(self, h, *args):
         h << ' '
         h << 'Confirm:' << h.input(type='password', length=10).action(self.confirm).error(self.confirm.error)
         h << h.hr
-        
+
         h << h.input(type='submit', value='Go')
 
     return h.root
@@ -179,12 +176,14 @@ examples = ('Form with validation rules and "inline" error notifications', examp
 # This example illustrates:
 #
 #  - the use of an intermediary editor object between the inputs received and
-#    the target object. 
+#    the target object.
 #  - the association of validation methods to editor properties
 #  - the aggregation of all the errors notifications
 
 @presentation.render_for(FormEditor, model='errors')
 def render(self, h, *args):
+    h.head.css_url('form.css')
+
     h.head.css('form-errors', '''
     .errors {
         border-top: 2px solid #c30;
@@ -192,17 +191,17 @@ def render(self, h, *args):
         background-color: #FFD5D5;
         margin: 8px;
     }
-    
+
     .errors ol {
         margin: 4px 0 4px 0;
     }
-    
+
     .errors ol li {
         font-size: 60%;
         font-weight: bold;
     }
     ''')
-    
+
     errors = [(name, error) for (name, error) in (
                                                      ('Age', self.age.error),
                                                      ('Text', self.area.error),
@@ -220,7 +219,7 @@ def render(self, h, *args):
 
         with h.fieldset:
             h << h.legend('A set of controls')
-            
+
             h << 'A text (use only "[a-d]" characters):'
             h << h.textarea(self.area(), rows='2', cols='40').action(self.area)
             h << h.br << h.br
@@ -234,7 +233,7 @@ def render(self, h, *args):
             h << h.input(type='radio', name='gender').selected(self.gender()=='male').action(lambda: self.gender('male'))
             h << ' Female'
             h << h.input(type='radio', name='gender').selected(self.gender()=='female').action(lambda: self.gender('female'))
-            
+
         with h.select(multiple='multiple').action(self.color):
             with h.optgroup(label='Colors'):
                 h << h.option('blue', value='blue').selected(self.color())
@@ -248,7 +247,7 @@ def render(self, h, *args):
         h << ' '
         h << 'Confirm:' << h.input(type='password', length=10).action(self.confirm)
         h << h.hr
-        
+
         h << h.input(type='submit', value='Go')
 
     return h.root
@@ -273,7 +272,7 @@ class NameEditor(object):
     """
     def __init__(self, name):
         """Initialization
-        
+
         In:
           - ``name`` -- initial value of the text field
         """
@@ -282,7 +281,7 @@ class NameEditor(object):
 
     def commit(self, comp):
         """If no error, answer the text
-        
+
         In:
           - ``comp`` -- the component
         """
@@ -291,29 +290,33 @@ class NameEditor(object):
 
 @presentation.render_for(NameEditor)
 def render(self, h, comp, *args):
-    return h.form(
-                  'Name: ', h.input(value=self.name()).action(self.name).error(self.name.error),
-                  # On submit, the component answers the text
-                  h.input(type='submit', value='Change').action(lambda: self.commit(comp)),
-                  ' ',
-                  # On cancel, the component answers ``None``
-                  h.input(type='submit', value='Cancel').action(comp.answer),
-                 )
+    h.head.css_url('form.css')
+
+    with h.form:
+        h << 'Name: ' << h.input(value=self.name()).action(self.name).error(self.name.error)
+
+        # On submit, the component answers the text
+        h << h.input(type='submit', value='Change').action(lambda: self.commit(comp)) << ' '
+
+        # On cancel, the component answers ``None``
+        h << h.input(type='submit', value='Cancel').action(comp.answer)
+
+        return h.root
 
 def edit_name(comp, row):
     """Edit the field ``name`` of a row (field #1)
-    
+
     In:
        - ``comp`` -- the current component
        - ``row`` -- a complete row
-       
+
     Out:
       - ``row`` -- field ``name`` modified
     """
     # Fetch the field #1, wrap it into a ``NameEditor`` object and then make
     # it a component that replaces the current component
     name = comp.call(component.Component(NameEditor(row[1])))
-    
+
     # The ``NameEditor`` answers the new field value
     # or ``None`` if the edition was canceled
     if name is not None:
@@ -323,7 +326,7 @@ def example2():
     headers = ('id', 'name')        # Name of the fields
 
     rows = [[2, 'a'], [3, 'b'], [1, 'c']]   # Table to display and edit
-    
+
     # Create an object that display a table
     table = widgets.Table(
                           rows,                          # The data
@@ -355,12 +358,12 @@ examples += ('Batched data grid', example3)
 
 class NamesEditor(object):
     """An editor for multiple text fields
-    """    
+    """
     def __init__(self, names):
         """Initialization
-        
+
         Create an editor property for each names
-        
+
         In:
           - ``names`` -- list of name to edit
         """
@@ -368,7 +371,7 @@ class NamesEditor(object):
 
     def commit(self, comp):
         """If all the fields are valid, answer the modified fields
-        
+
         In:
           - ``comp`` -- this component
         """
@@ -377,21 +380,23 @@ class NamesEditor(object):
 
 @presentation.render_for(NamesEditor)
 def render(self, h, comp, *args):
+    h.head.css_url('form.css')
+
     with h.form:
         for name in self.names:
-            h << 'Name: '
-            h << h.input(value=name()).action(name).error(name.error)
-            h << h.br
-        
+            with h.div:
+                h << 'Name: '
+                h << h.input(value=name()).action(name).error(name.error)
+
         h << h.input(type='submit', value='Changer').action(lambda: self.commit(comp))
         h << ' '
         h << h.input(type='submit', value='Annuler').action(comp.answer)
 
     return h.root
-    
+
 def modify_rows(table, selected_rows):
     """Edit the field ``name`` of the selected row
-    
+
     In:
       - ``table`` -- the table widget component
       - ``selected_rows`` -- the selected rows
@@ -404,13 +409,13 @@ def modify_rows(table, selected_rows):
         # The modification was canceled
         return
 
-    # Modification made, replace the ``name`` fields of the selected rows 
+    # Modification made, replace the ``name`` fields of the selected rows
     for (row, new) in zip(selected_rows, news):
         row[1] = new
 
 def reset_rows(table, selected_rows):
     """Reset the field ``name`` of the selected rows
-    
+
     In:
       - ``table`` -- the table widget component
       - ``selected_rows`` -- the selected rows

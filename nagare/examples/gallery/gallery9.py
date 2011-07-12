@@ -103,7 +103,7 @@ class Gallery(Entity):
 
             photo = Photo(title, img, thumbnail=thumb.thumbnail(img))
             self.photos.append(photo)
-            session.add(photo)
+            database.session.add(photo)
 
 @presentation.render_for(Gallery)
 def render(self, h, comp, *args):

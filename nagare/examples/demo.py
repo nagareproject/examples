@@ -9,8 +9,7 @@
 
 from __future__ import with_statement
 
-from webob import exc
-from nagare import component, presentation
+from nagare import component, presentation, var
 
 # Modules where the examples are located
 import counter
@@ -22,70 +21,29 @@ import number
 
 # ---------------------------------------------------------------------------
 
-class TreeView(object):
-    """This component display a 2-levels tree
+class Menu(object):
+    """This component displays a menu
     """
-    def __init__(self, nodes, label):
+    def __init__(self, labels, selected=0):
         """Initialization
-        
-        In:
-          - ``nodes`` -- list of list
-          - ``label`` -- prefix label to display for the 2nd level nodes
-        """
-        self.nodes = nodes
-        self.label = label
-        
-        self._selected = 0   # The currently selected nodes
-        
-    def selected(self, comp, i, n, name, data):
-        """A new 2nd level node is selected
-        
-        In:
-          - ``comp`` -- this component
-          - ``i`` -- index of the selected node
-          - ``n`` -- the new selected node
-          - ``name`` -- label of the first level node (the parent)
-          - ``data`` -- data of the selected 2nd level node
-        """
-        self._selected = n
-        comp.answer((name, i, data))
-        
-    def select(self, comp, category, n):
-        node = 0
-        for (name, level2_nodes) in self.nodes:
-            if name == category:
-                if n < len(level2_nodes):
-                    node += n
-                    self.selected(comp, n, node, name, level2_nodes[n])
-                    return True
-            else:
-                node += len(level2_nodes)
 
-        return False
-        
-        
-@presentation.render_for(TreeView)
+        In:
+          - ``labels`` -- list of menu entries (title, url)
+          - ``selected`` -- selected label
+        """
+        self.labels = labels
+        self._selected = selected   # The currently selected label
+
+@presentation.render_for(Menu)
 def render(self, h, comp, *args):
-    node = 0
+    with h.ul(class_='menu'):
+        for (i, (label, href)) in enumerate(self.labels):
+            # When clicked, an entry answers with its index
+            a = h.a(label, href=href).action(lambda i=i: comp.answer(i))
+            if i == self._selected:
+                a(class_='selected')
 
-    # Display a list of lists
-    with h.ul(style='padding-right: 10px; border-right: solid 3px #eee'):
-        for (name, level2_nodes) in self.nodes:
-            # First level, display the name of the node
-            with h.li(name.capitalize()):
-                with h.ul:
-                    for (i, data) in enumerate(level2_nodes):
-                        # Second level, display a selectable label
-                        with h.li as li:
-                            if node == self._selected:
-                                # Currently selected node
-                                li.set('style', 'background-color: #eee')
-                                h << self.label + str(i+1)
-                            else:
-                                # Selectable node
-                                h << h.a(self.label + str(i+1), href='%s/%d' % (name, i+1)).action(lambda i=i, node=node, name=name, data=data: self.selected(comp, i, node, name, data))
-
-                            node += 1
+            h << h.li(a)
 
     return h.root
 
@@ -94,127 +52,138 @@ def render(self, h, comp, *args):
 class Examples(object):
     """Display the UI to browse the examples
     """
-    def __init__(self, title, label, repository_path, examples):
+    def __init__(self, title, repository_path, examples):
         """Initialization
-        
+
         In:
           - ``title`` -- title to display
-          - ``label`` -- prefix label to display for the 2nd level nodes 
-          - ``repository_path`` -- url template to display the module code
-          - ``examples`` -- tree of examples
+          - ``repository_path`` -- url template to display a module code
+          - ``examples`` -- list of examples
         """
         self.title = title
         self.repository_path = repository_path
-        
-        # The ``example`` component, displayed on the right side of the
+        self.examples = examples
+
+        # The ``example`` component is displayed on the right side of the
         # screen. It will be replaced each time an example is selected
         self.example = component.Component(None)
 
-        # Display the first example found
-        self.change_example((examples[0][0], 0, examples[0][1][0]))
-        
-        # The ``tree_view`` component, displayed on the left side of the
+        # The ``tree_view`` component is displayed on the left side of the
         # screen. It will answered the selected example
-        self.tree_view = component.Component(TreeView(examples, label))
-        
-        # Each time an example is selected into the tree view, call the
+        self.level1_menu = component.Component(None)
+
+        # Each time an example is selected in the menu, call the
         # ``change_example()`` method
-        self.tree_view.on_answer(self.change_example)
+        self.level1_menu.on_answer(self.change_example)
 
-    def change_example(self, (module_name, i, (description, comp))):
+        self.level2_menu = component.Component(None)
+        self.level2_menu.on_answer(self.change_step)
+
+        # Select the first example
+        self.change_example(0)
+
+    def change_example(self, i):
         """A new example is selected
-        
-        In:
-          - ``module_name`` -- name of the module where the example is located
-          - ``description`` -- description of the example
-          - ``comp`` -- root component of the example
-        """
-        self.module_name = module_name
-        self.description = description
 
-        # Change the right side of the screen with the example
-        self.example.becomes(comp(), url='%s/%d' % (module_name, i+1))
-        
+        In:
+          - ``i`` -- index of the example to select
+        """
+        self.selected_examples = i;
+        self.module_name = self.examples[i][0]
+
+        self.level1_menu.becomes(Menu([(label.capitalize(), label) for (label, _) in self.examples], i))
+
+        self.change_step(0)
+
+    def change_step(self, i):
+        """A new step of the current example is selected
+
+        In:
+          - ``i`` -- step to select
+        """
+        selected_examples = self.examples[self.selected_examples][1]
+        self.description = selected_examples[i][0]
+
+        self.example.becomes(selected_examples[i][1](), url='%s/%d' % (self.module_name, i+1))
+
+        if len(selected_examples) != 1:
+            labels = [('%s %d' % (self.module_name, j), j) for j in range(1, len(selected_examples)+1)]
+            self.level2_menu.becomes(Menu(labels, i), url=self.module_name)
+        else:
+            self.level2_menu.becomes(None)
+
 @presentation.render_for(Examples)
 def render(self, h, comp, *args):
     """Display the full UI
     """
     # Add some CSS into the page header
-    h.head.css_url('/static/nagare/application.css')    
-    h.head.css('examples', '''
-    #description {
-        border: dashed 1px;
-        padding: 5px;
-        background-color: #eee;
-        font-style: italic;
-        width: 95%;
-    }
-    
-    #example {
-        padding-left: 10px;
-        padding-top: 25px;
-        vertical-align: top;
-        width: 100%;
-    }
-    
-    #source {
-        text-align: right;
-        font-size: 0.7em;
-        padding-right: 30px;
-    }
-    ''')
-    h.head << h.head.title('Nagare examples')
+    h.head.css_url('/static/nagare/application.css')
+    h.head.css_url('demo.css')
 
-    with h.div(class_='mybody'):
-        # Create the page banner
-        with h.div(id='myheader'):
-            h << h.a(h.img(src='/static/nagare/img/logo.gif'), id='logo', href='http://www.nagare.org/', title='Nagare home')
-            h << h.span(self.title, id='title')
-    
-        with h.div(id='main'):
-            # Create a table with, into the left column, the tree view of the examples
-            # and, into the right column the currently selected example
-            with h.table(width='100%'):
-                with h.tr:
-                    # Display the tree view
-                    h << h.td(self.tree_view, valign='top')
-                    
-                    # Display the currently selected example
-                    with h.td(id='example'):
-                        h << h.div(self.description, id='description')
-                        with h.div(id='source'):
-                            h << h.a('View the source', href=self.repository_path % self.module_name)
-                            h << h.br
-                        h << self.example
+    h.head << h.head.title(self.title)
 
-    h << h.div(class_='footer')
+    with h.div(id='body'):
+        h << h.a(h.img(src='/static/nagare/img/logo.png'), id='logo', href='http://www.nagare.org/', title='Nagare home')
+
+        with h.div(id='content'):
+            h << h.div(self.title, id='title')
+
+            h << h.div(self.level1_menu, id='mainnav', class_='horizontal')
+
+            with h.div(id='main'):
+                if self.level2_menu():
+                    h << h.div(self.level2_menu, id='steps')
+
+                with h.div(id='example', class_='example_right' if self.level2_menu() else 'example_full' ):
+                    h << h.div(self.description, class_='note')
+
+                    with h.div(id='source'):
+                        h << h.a('View the source', href=self.repository_path % self.module_name)
+
+                    h << self.example
 
     return h.root
 
 # ---------------------------------------------------------------------
 
-@presentation.init_for(Examples, "http_method != 'GET'")
+@presentation.init_for(Examples, "len(url) == 1")
 def init(self, url, comp, http_method, request):
-    raise exc.HTTPMethodNotAllowed()
+    example_name = url[0]
+
+    try:
+        example = [x[0] for x in self.examples].index(example_name)
+    except ValueError:
+        raise presentation.HTTPNotFound()
+
+    self.change_example(example)
 
 @presentation.init_for(Examples, "len(url) >= 2 and http_method == 'GET'")
 def init(self, url, comp, http_method, request):
-    (name, n) = url[:2]
-    r = self.tree_view().select(self.tree_view, name, int(n)-1)
-    if not r:
-        raise exc.HTTPNotFound()
-    
+    comp.init(url[:1], http_method, request)
+
+    step = url[1]
+
+    try:
+        step = int(step)
+    except ValueError:
+        raise presentation.HTTPNotFound()
+
+    if (step <= 0) or (step > len(self.examples[self.selected_examples][1])):
+        raise presentation.HTTPNotFound()
+
+    self.change_step(step-1)
+
     if len(url) > 2:
         self.example.init(url[2:], http_method, request)
-    
+
 # ---------------------------------------------------------------------
 
 def module_name(name):
     """From a full Python module name, return only the module name
-    
+
     In:
       - ``name`` -- Python module name
-      
+
     Return:
       - module name
     """
@@ -225,11 +194,10 @@ def module_name(name):
 # Modules where to located the ``examples`` list
 modules = (counter, calculator, color, tictactoe, number, form)
 
-# Create a tree with, at the first level, the module name and, at the second
-# level, a list of tuples (example description, example factory)
+# Create the examples list
 examples = [(module_name(module.__name__), zip(module.examples[::2], module.examples[1::2])) for module in modules]
 
-# TRAC url to display a module code from the SVN repository
-SVN_EXAMPLES_URL = 'http://www.nagare.org/trac/browser/trunk/nagare/examples/nagare/examples/%s.py'
+# TRAC url to display a module code from the Mercurial repository
+HG_EXAMPLES_URL = 'http://www.nagare.org/trac/browser/examples/nagare/examples/%s.py'
 
-app = lambda: Examples('Demo', 'Demo', SVN_EXAMPLES_URL, examples)
+app = lambda: Examples('Demo', HG_EXAMPLES_URL, examples)

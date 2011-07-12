@@ -7,40 +7,25 @@
 # this distribution.
 #--
 
-"""A RPN calculator"""
+from __future__ import with_statement
 
 import operator
 from nagare import presentation
 
 class Calculator:
-    """A RPN calculator object with methods to manage the stack
-    """
     def __init__(self):
-        """Initialisation"""
-        self.display = ''   # Number displayed
-        self.stack = []     # RPN stack
+        self.display = ''
+        self.stack = []
 
     def digit(self, digit):
-        """A new digit is entered
-
-        In:
-          - ``digit``
-        """
         self.display += str(digit)
 
     def enter(self):
-        """The ``enter`` is pressed, push the number displayed onto the stack
-        """
         if self.display:
             self.stack.append(int(self.display))
             self.display = ''
 
     def operand(self, op):
-        """Do a calculus. Push the result onto the stack.
-
-        In:
-          - ``op`` -- 2 operands function
-        """
         self.enter()
 
         if len(self.stack) >= 2:
@@ -48,7 +33,6 @@ class Calculator:
             self.stack[-1] = op(self.stack[-1], v)
 
     def drop(self):
-        """Clear the display or drop the top of the stack"""
         if self.display:
             self.display = ''
             return
@@ -59,11 +43,6 @@ class Calculator:
         self.stack.pop()
 
     def get_last(self):
-        """Return the number displayed or the top of the stack
-
-        Return:
-          - the number
-        """
         if self.display:
             return self.display
 
@@ -74,14 +53,6 @@ class Calculator:
 
 @presentation.render_for(Calculator)
 def render(self, h, *args):
-    """Rendering of the RPN calculator
-
-    In:
-      - ``h`` -- the renderer
-
-    Return:
-      - the view
-    """
     h.head << h.head.css_url('calculator.css')
 
     with h.div(class_='calculator'):
@@ -122,5 +93,50 @@ def render(self, h, *args):
 
     return h.root
 
-examples = ('RPN calculator', Calculator)
+# -----------------------------------------------------------------------------
 
+hl_lines = (
+    range(1, 84),
+    (
+        (4,),
+        'Definition of a Plain Old Calculator Python Object',
+        range(4, 42)
+    ),
+
+    (
+        (43,),
+        '<p>Default view for a <code>Calculator</code></p>'
+        '<p>Parameters are:'
+        '<ol>'
+        '<li><code>self</code>: the <code>Calculator</code> object</li>'
+        '<li><code>h</code>: a HTML renderer</li>'
+        '<li><code>comp</code>: the component wrapping the <code>Counter</code>'
+        'object</li>'
+        '</ol>',
+        range(43, 84)
+    ),
+
+    (
+        (53,),
+        'Direct association of the <code>drop</code> method to a link',
+        (53,)
+    ),
+
+    (
+        (54, 61, 68, 75),
+        'Use of anonymous functions to call the <code>operand</code> method',
+        (54, 61, 68, 75)
+    ),
+
+    (
+        (57, 58, 59, 64, 65, 66, 71, 72, 73, 79),
+        'Use of anonymous functions to call the <code>digit</code> method',
+        (57, 58, 59, 64, 65, 66, 71, 72, 73, 79),
+    ),
+
+    (
+        (81,),
+        'Direct association of the <code>enter</code> method to link',
+        (81,)
+    )
+)

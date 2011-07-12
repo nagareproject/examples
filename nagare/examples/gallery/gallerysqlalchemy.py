@@ -37,4 +37,4 @@ mapper(Gallery, gallery_table, properties={ 'photos' : relation(Photo, backref='
 # ---------------------------------------------------------------------------
 
 def populate():
-    session.add(Gallery(name=u'MyGallery'))
+    database.session.add(Gallery(name=u'MyGallery'))

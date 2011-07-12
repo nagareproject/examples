@@ -8,7 +8,7 @@
 #--
 
 from nagare.examples.demo import Examples
-from nagare.examples.gallery import gallery1, gallery2, gallery3, gallery4, gallery5, gallery6, gallery7 
+from nagare.examples.gallery import gallery1, gallery2, gallery3, gallery4, gallery5, gallery6, gallery7
 
 examples = (
             ('gallery1', ((gallery1.__doc__, gallery1.app),)),
@@ -23,4 +23,4 @@ examples = (
 # TRAC url to display a module code from the SVN repository
 SVN_EXAMPLES_URL = 'http://www.nagare.org/trac/browser/trunk/nagare/examples/nagare/examples/gallery/%s.py'
 
-app = lambda: Examples('Gallery tutorial', 'Step', SVN_EXAMPLES_URL, examples)
+app = lambda: Examples('Gallery tutorial', SVN_EXAMPLES_URL, examples)

@@ -102,17 +102,18 @@ class Board(object):
 
 @presentation.render_for(Board)
 def render(self, h, comp, *args):
-    h << h.h1('Score: ', self.score)
+    with h.div(class_='jewels'):
+        h << h.h1('Score: ', self.score)
 
-    with h.table:
-        for (i, row) in enumerate(zip(*self.matrix)[1:-1]):
-            with h.tr:
-                for (j, jewel) in enumerate(row[1:-1]):
-                    with h.td(class_='cell%d' % ((i+j) % 2)):
-                        if jewel:
-                            # Clicking on a cell with a jewel answers the tuple (i, j)
-                            with h.a.action(lambda i=i+1, j=j+1: comp.answer((i, j))):
-                                h << h.img(src='jewel%d.gif' % jewel)
+        with h.table:
+            for (i, row) in enumerate(zip(*self.matrix)[1:-1]):
+                with h.tr:
+                    for (j, jewel) in enumerate(row[1:-1]):
+                        with h.td(class_='cell%d' % ((i+j) % 2)):
+                            if jewel:
+                                # Clicking on a cell with a jewel answers the tuple (i, j)
+                                with h.a.action(lambda i=i+1, j=j+1: comp.answer((i, j))):
+                                    h << h.img(src='jewel%d.gif' % jewel)
 
     return h.root
 

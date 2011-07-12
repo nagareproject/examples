@@ -22,7 +22,7 @@ examples = ()
 # This example:
 #
 # - shows how to add multiples web views on a Python object
-# - shows how to associate method actions to HTML elements 
+# - shows how to associate method actions to HTML elements
 
 class Counter1:
     """A simple counter with ``increase`` and ``decrease`` logics
@@ -38,12 +38,70 @@ class Counter1:
 
 @presentation.render_for(Counter1)
 def render(self, h, comp, *args):
-    """This view is written in "functional HTML"
-    
+    """Same view but written in "imperative HTML"
+
     In:
       - ``h`` -- the renderer
       - ``comp`` -- the component
-      
+
+    Return:
+      - the view of the referenced object
+    """
+    h.head.css_url('counter.css')
+
+    with h.div(class_='counter'):
+        h << h.div(self.v)
+
+        with h.span:
+            h << h.a(u'\N{MINUS SIGN}', title='decrease').action(self.decrease)
+
+        with h.span:
+            h << h.a('=', title='freeze').action(lambda: comp.becomes(self, model='freezed'))
+
+        with h.span:
+            h << h.a(u'\N{PLUS SIGN}', title='increase').action(self.increase)
+
+    return h.root
+
+@presentation.render_for(Counter1, model='freezed')
+def render(self, h, *args):
+    """An other view, displaying only the counter value, without any actions
+    possible
+
+    In:
+      - ``h`` -- the renderer
+      - ``comp`` -- the component
+
+    Return:
+      - the view of the referenced object
+    """
+    h.head.css_url('counter.css')
+
+    with h.div(class_='counter'):
+        h << h.div(self.v)
+
+        with h.span:
+            h << h.a(u'\N{MINUS SIGN}', class_='disabled')
+
+        with h.span:
+            h << h.a('=', class_='disabled')
+
+        with h.span:
+            h << h.a(u'\N{PLUS SIGN}', class_='disabled')
+
+    return h.root
+
+examples += ('Multiple views and methods callbacks', Counter1)
+
+'''
+@presentation.render_for(Counter1)
+def render(self, h, comp, *args):
+    """This view is written in "functional HTML"
+
+    In:
+      - ``h`` -- the renderer
+      - ``comp`` -- the component
+
     Return:
       - the view of the referenced object
     """
@@ -55,51 +113,14 @@ def render(self, h, comp, *args):
              h.hr,
              h.a('Freeze it !').action(lambda: comp.becomes(self, model='freeze'))
            )
-
-@presentation.render_for(Counter1, model='with')
-def render(self, h, comp, *args):
-    """Same view but written in "imperative HTML"
-    
-    In:
-      - ``h`` -- the renderer
-      - ``comp`` -- the component
-      
-    Return:
-      - the view of the referenced object
-    """    
-    with h.div:
-        with h.div:
-            h << 'Value: ' << self.v
-        h << h.a('++').action(self.increase) << '|' << h.a('--').action(self.decrease)
-
-        h << h.hr
-
-        h << h.a('Freeze it !').action(lambda: comp.becomes(self, model='freeze'))
-
-    return h.root
-
-@presentation.render_for(Counter1, model='freeze')
-def render(self, h, *args):
-    """An other view, displaying only the counter value, without any actions
-    possible
-    
-    In:
-      - ``h`` -- the renderer
-      - ``comp`` -- the component
-      
-    Return:
-      - the view of the referenced object
-    """    
-    return h.h2(self.v)
-
-examples += ('Multiple views and methods callbacks', Counter1)
+'''
 
 # ---------------------------------------------------------------------------
 
 # This example:
 #
 # - shows how to add multiples web views on a Python object
-# - shows how to associate lambda actions to HTML elements 
+# - shows how to associate lambda actions to HTML elements
 
 from nagare.var import Var
 
@@ -113,36 +134,57 @@ class Counter2:
 @presentation.render_for(Counter2)
 def render(self, h, comp, *args):
     """View with lambdas as actions
-    
+
     In:
       - ``h`` -- the renderer
       - ``comp`` -- the component
-      
+
     Return:
       - the view of the referenced object
-    """    
-    return (
-             h.div('Value: ', self.v),
-             h.a('++').action(lambda: self.v(self.v()+1)),
-             '|',
-             h.a('--').action(lambda: self.v(self.v()-1)),
-             h.hr,
-             h.a('Freeze it !').action(lambda: comp.becomes(self, model='freeze')),
-           )
+    """
+    h.head.css_url('counter.css')
 
-@presentation.render_for(Counter2, 'freeze')
+    with h.div(class_='counter'):
+        h << h.div(self.v)
+
+        with h.span:
+            h << h.a(u'\N{MINUS SIGN}', title='decrease').action(lambda: self.v(self.v()-1))
+
+        with h.span:
+            h << h.a('=', title='freeze').action(lambda: comp.becomes(self, model='freezed'))
+
+        with h.span:
+            h << h.a(u'\N{PLUS SIGN}', title='increase').action(lambda: self.v(self.v()+1))
+
+    return h.root
+
+@presentation.render_for(Counter2, model='freezed')
 def render(self, h, *args):
     """An other view, displaying only the counter value, without any actions
     possible
-    
+
     In:
       - ``h`` -- the renderer
       - ``comp`` -- the component
-      
+
     Return:
       - the view of the referenced object
-    """    
-    return h.h2(self.v)
+    """
+    h.head.css_url('counter.css')
+
+    with h.div(class_='counter'):
+        h << h.div(self.v)
+
+        with h.span:
+            h << h.a(u'\N{MINUS SIGN}', class_='disabled')
+
+        with h.span:
+            h << h.a('=', class_='disabled')
+
+        with h.span:
+            h << h.a(u'\N{PLUS SIGN}', class_='disabled')
+
+    return h.root
 
 examples += ('Multiple views and lambdas callbacks', Counter2)
 
@@ -160,31 +202,31 @@ class App:
         self.nb_display = 0
 
         # 2 different components of the same type
-        self.counter1 = component.Component(Counter2())
-        self.counter2 = component.Component(Counter2())
+        self.counter1 = component.Component(Counter1())
+        self.counter2 = component.Component(Counter1())
 
 @presentation.render_for(App)
 def render(self, h, *args):
     self.nb_display += 1
 
     with h.div:
-        h << h.div('Nb displays: ', self.nb_display) << h.br
+        h << h.div('Full page generation: ', self.nb_display)
 
-        with h.table(width='100%'):
-            with h.tr:
-                h << h.td(h.u('Synchronous'))
-                h << h.td(h.u('Asynchronous-'))
-                
-            with h.tr:
-                # The ``counter1`` component is rendered with a standard HTML renderer
-                h << h.td(self.counter1)
+        with h.div(style='float: left; margin-top: 10px'):
+            h << h.div('Synchronous', style='text-align: center')
 
-                # The ``counter2`` component is rendered with an asynchronous HTML renderer
-                h << h.td(self.counter2.render(h.AsyncRenderer()))
+            # The ``counter1`` component is rendered with a standard HTML renderer
+            h << self.counter1
+
+        with h.div(style='float: right; margin-top: 10px'):
+            h << h.div('Asynchronous', style='text-align: center')
+
+            # The ``counter2`` component is rendered with an asynchronous HTML renderer
+            h << self.counter2.render(h.AsyncRenderer())
 
     return h.root
 
-examples += ('Automatic use of asynchronous requests/updates', App) 
+examples += ('Automatic use of asynchronous requests/updates', App)
 
 # ---------------------------------------------------------------------
 
@@ -207,27 +249,21 @@ class Counter4:
 
 @presentation.render_for(Counter4)
 def render(self, h, *args):
-    return (
-            # HTML element to update
-            h.div('0', id='value'),
-            
-            
-            # ``ajax.Update`` object that:
-            #
-            #   - calls ``self.increase`` as action
-            #   - calls ``lambda h: str(self.v)`` to render the view
-            #   - updates the HTML element with the id ``value`` on the client
-            h.a('++').action(ajax.Update(lambda h: str(self.v), self.increase, 'value')),
+    h.head.css_url('counter.css')
 
-            ' | ',
-            
-            # ``ajax.Update`` object that:
-            #
-            #   - calls ``self.decrease`` as action
-            #   - calls ``lambda h: str(self.v)`` to render the view
-            #   - updates the HTML element with the id ``value`` on the client
-            h.a('--').action(ajax.Update(lambda h: str(self.v), self.decrease, 'value')),
-           )
+    with h.div(class_='counter'):
+        h << h.div(self.v, id='value')
+
+        with h.span:
+            h << h.a(u'\N{MINUS SIGN}', title='decrease').action(ajax.Update(lambda h: str(self.v), self.decrease, 'value'))
+
+        with h.span:
+            h << h.a('=', class_='disabled')
+
+        with h.span:
+            h << h.a(u'\N{PLUS SIGN}', title='increase').action(ajax.Update(lambda h: str(self.v), self.increase, 'value'))
+
+    return h.root
 
 examples += ('Asynchronous update of a HTML element', Counter4)
 
@@ -238,6 +274,7 @@ examples += ('Asynchronous update of a HTML element', Counter4)
 # - shows how to explicitly use a ``ajax.Update`` callback to change a HTML
 #   element asynchronously
 
+"""
 @presentation.render_for(Counter4, model='without_id')
 def render(self, h, *args):
     # HTML element to update
@@ -252,9 +289,9 @@ def render(self, h, *args):
             #   - calls ``lambda h: str(self.v)`` to render the view
             #   - updates the given HTML element
             h.a('++').action(ajax.Update(lambda h: str(self.v), self.increase, div)),
-            
+
             ' | ',
-            
+
             # ``ajax.Update`` object that:
             #
             #   - calls ``self.decrease`` as action
@@ -262,6 +299,27 @@ def render(self, h, *args):
             #   - updates the given HTML element
             h.a('--').action(ajax.Update(lambda h: str(self.v), self.decrease, div)),
            )
+"""
+
+@presentation.render_for(Counter4, model='without_id')
+def render(self, h, *args):
+    h.head.css_url('counter.css')
+
+    with h.div(class_='counter'):
+        div = h.div(self.v)
+
+        h << div
+
+        with h.span:
+            h << h.a(u'\N{MINUS SIGN}', title='decrease').action(ajax.Update(lambda h: str(self.v), self.decrease, div))
+
+        with h.span:
+            h << h.a('=', class_='disabled')
+
+        with h.span:
+            h << h.a(u'\N{PLUS SIGN}', title='increase').action(ajax.Update(lambda h: str(self.v), self.increase, div))
+
+    return h.root
 
 class App2:
     def __init__(self):

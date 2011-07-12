@@ -1,0 +1,28 @@
+div.counter {
+    width: 221px;
+    height: 161px;
+    background-image: url(background_count.png);
+}
+
+div.counter div {
+    font-size: 60px;
+    line-height: 95px;
+    text-align: center;
+}
+
+div.counter span {
+    display: inline-block;
+    width: 70px;
+    height: 70px;
+    text-align: center;
+}
+
+div.counter span a {
+    display: block;
+    font-size: 40px;
+    background: url(button.png) no-repeat 50% 50%;
+}
+
+.disabled {
+    color: #808080;
+}

@@ -22,7 +22,7 @@ examples = (
             ('wiki9', ((wiki9.__doc__, wiki9.app),)),
            )
 
-# TRAC url to display a module code from the SVN repository
-SVN_EXAMPLES_URL = 'http://www.nagare.org/trac/browser/trunk/nagare/examples/nagare/examples/wiki/%s.py'
+# TRAC url to display a module code from the Mercurial repository
+HG_EXAMPLES_URL = 'http://www.nagare.org/trac/browser/examples/nagare/examples/wiki/%s.py'
 
-app = lambda: Examples('Wiki tutorial', 'Step', SVN_EXAMPLES_URL, examples)
+app = lambda: Examples('Wiki tutorial', HG_EXAMPLES_URL, examples)

@@ -93,7 +93,7 @@ class Gallery(object):
         self.name = name
         if GalleryData.get_by(name=name) is None:
             GalleryData(name=name)
-            session.flush()
+            database.session.flush()
 
     def add_photo(self, comp):
         r = comp.call(PhotoCreator())

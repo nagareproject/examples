@@ -18,4 +18,4 @@ Entity = declarative.declarative_base(metadata=__metadata__)
 # ---------------------------------------------------------------------------
 
 def populate2():
-    session.add(GalleryData(name=u'MyGallery'))
+    database.session.add(GalleryData(name=u'MyGallery'))

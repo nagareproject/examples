@@ -37,7 +37,7 @@ setup(
       demo = nagare.examples.demo:app
       wiki = nagare.examples.wiki.wiki9:app
       gallery = nagare.examples.gallery.gallery7:app
-      portal = nagare.examples.portal:app
+      portal = nagare.examples.portal.portal:app
       jewels = nagare.examples.jewels:app
       chat = nagare.examples.chat:app
       ''',
