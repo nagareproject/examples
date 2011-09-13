@@ -29,11 +29,10 @@ def dropShadow(image, offset=(5,5), background=0xffffff, shadow=0x444444,
       enough to account for the blurring of the shadow.
     - ``iterations`` -- Number of times to apply the filter.  More iterations
       produce a more blurred shadow, but increase processing time.
-  
-  The author of this function is Kevin Schluff:              
+
+  The author of this function is Kevin Schluff:
     http://code.activestate.com/recipes/474116/
   """
-
   # Create the backdrop image -- a box in the background colour with a
   # shadow on it.
   totalWidth = image.size[0] + abs(offset[0]) + 2*border
@@ -74,12 +73,17 @@ def outline(image, border=5, color=0x000000):
 
 
 def thumbnail(image):
-  img = Image.open(StringIO.StringIO(image))
-  img.thumbnail( (200,200), Image.ANTIALIAS)
-  thumb = dropShadow(outline(img, border=8, color=0x666666), shadow=0x666666)
-  
+  thumb = Image.open(StringIO.StringIO(image))
+  format = thumb.format
+
+  if thumb.mode == 'P':
+      thumb.thumbnail((200,200))
+  else:
+      thumb.thumbnail((200,200), Image.ANTIALIAS)
+      thumb = dropShadow(outline(thumb, border=8, color=0x666666), shadow=0x666666)
+
   i = StringIO.StringIO()
-  thumb.save(i, img.format)
+  thumb.save(i, format)
   return i.getvalue()
 
 # ---------------------------------------------------------------------------
