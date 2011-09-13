@@ -28,6 +28,7 @@ setup(
       packages = find_packages(),
       include_package_data = True,
       package_data = {'' : ['*.cfg']},
+      use_hg_version = True,
       zip_safe = False,
       dependency_links = ('http://www.nagare.org/download/',),
       install_requires = ('nagare[database]>0.2.0', 'docutils', 'PIL'),
