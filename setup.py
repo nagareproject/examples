@@ -19,7 +19,7 @@ setup(
       description = 'Demo and examples for the Nagare web framework',
       long_description = '''Read the `installation document <http://www.nagare.org/trac/wiki/DemoInstallation>`_
       to do a standard installation or a developer installation with the
-      `latest <http://www.nagare.org/download/nagare.examples-latest#egg=nagare.examples-dev>`_
+      `latest <http://www.nagare.org/snapshots/nagare.examples-latest#egg=nagare.examples-dev>`_
       development version from the `mercurial repository <http://hg.nagare.org/examples>`_.
       ''',
       license = 'BSD',
