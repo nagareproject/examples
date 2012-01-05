@@ -91,7 +91,6 @@ class Gallery(object):
         self.name = name
         if GalleryData.get_by(name=name) is None:
             GalleryData(name=name)
-            database.session.flush()
 
     def add_photo(self, comp):
         r = comp.call(PhotoCreator())
@@ -124,10 +123,10 @@ def render(self, h, comp, *args):
 
         with h.ul(class_='photo_list'):
             for p in GalleryData.get_by(name=self.name).photos:
-                
+
                 # The url for a photo is its title
                 photo = component.Component(Photo(p.id), url=p.title)
-                
+
                 photo.on_answer(comp.call)
 
                 h << h.li(photo.render(h, model='thumbnail'))
@@ -142,10 +141,10 @@ def init(self, url, comp, *args):
     if not photo_data:
         # A photo with this name doesn't exist
         raise presentation.HTTPNotFound()
-    
+
     # Get the photo data and make a ``Photo`` component
     photo = component.Component(Photo(photo_data.id))
-    
+
     # Temporary change the Gallery (the ``comp``) with the photo
     component.call_wrapper(lambda: comp.call(photo))
 

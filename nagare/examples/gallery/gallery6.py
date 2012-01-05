@@ -93,7 +93,6 @@ class Gallery(object):
         self.name = name
         if GalleryData.get_by(name=name) is None:
             GalleryData(name=name)
-            database.session.flush()
 
     def add_photo(self, comp):
         r = comp.call(PhotoCreator())
@@ -101,7 +100,7 @@ class Gallery(object):
             (title, img) = r
 
             gallery = GalleryData.get_by(name=self.name)
-            
+
             # Generating a true thumbnail with ``thumb.thumbnail()``
             gallery.photos.append(PhotoData(title=title, img=img, thumbnail=thumb.thumbnail(img)))
 
