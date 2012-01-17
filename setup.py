@@ -32,7 +32,7 @@ setup(
       use_hg_version = True,
       zip_safe = False,
       dependency_links = ('http://www.nagare.org/download/',),
-      install_requires = ('nagare[database]>0.2.0', 'docutils', 'PIL'),
+      install_requires = ('nagare[database,doc]>=0.4.0', 'PIL'),
       namespace_packages = ('nagare', 'nagare.examples',),
       entry_points = '''
       [nagare.applications]
