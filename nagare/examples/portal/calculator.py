@@ -96,7 +96,7 @@ def render(self, h, *args):
 # -----------------------------------------------------------------------------
 
 hl_lines = (
-    range(1, 84),
+    range(12, 95),
     (
         (4,),
         'Definition of a Plain Old Calculator Python Object',
@@ -110,8 +110,6 @@ hl_lines = (
         '<ol>'
         '<li><code>self</code>: the <code>Calculator</code> object</li>'
         '<li><code>h</code>: a HTML renderer</li>'
-        '<li><code>comp</code>: the component wrapping the <code>Counter</code>'
-        'object</li>'
         '</ol>',
         range(43, 84)
     ),
@@ -131,7 +129,7 @@ hl_lines = (
     (
         (57, 58, 59, 64, 65, 66, 71, 72, 73, 79),
         'Use of anonymous functions to call the <code>digit</code> method',
-        (57, 58, 59, 64, 65, 66, 71, 72, 73, 79),
+        (57, 58, 59, 64, 65, 66, 71, 72, 73, 79)
     ),
 
     (

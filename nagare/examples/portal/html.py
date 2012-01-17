@@ -59,45 +59,45 @@ def default_view(self, h, comp, *args):
 # -----------------------------------------------------------------------------
 
 hl_lines = (
-    range(3, 45),
+    range(12, 59),
     (
         (4,),
-        '<p>A <code>HtmlWidget</code> is defined</p>'
+        '<p>A <code>Html</code> widget is defined</p>'
         '<p>Its default view displays its HTML content</p>',
-        range(4, 16)
+        range(4, 17)
     ),
 
     (
-        (30, 39),
-        '<p>Use of the Call/Answer mechanism: a <code>HtmlWidget</code> objects '
+        (14, 42),
+        '<p>Use of the <code>call()/answer()</code> mechanism: a <code>Html</code> widget '
         'calls an <code>HTMLEditor</code></p>'
-        '<p>When the `save` button is clicked, the <code>content</code> is changed, '
-        'the editor answers and the <code>HtmlWidget</code> is rendered back</p>',
-        [14, 30, 31, 32, 39]
+        '<p>When the <code>Save</code> button is clicked, the <code>content</code> is changed, '
+        'the editor answers and the <code>Html</code> widget is rendered back</p>',
+        [14, 33, 34, 35, 42]
     ),
 
     (
-        (14, 41),
-        '<p>Use of the Call/Answer mechanism: a <code>HtmlWidget</code> objects'
+        (14, 44),
+        '<p>Use of the <code>call()/answer()</code> mechanism: a <code>Html</code> widget '
         'calls an <code>HTMLEditor</code></p>'
-        '<p>When the `cancel` is clicked the editor answers and the '
-        '<code>HtmlWidget</code> is rendered back',
-        [14, 41]
+        '<p>When the <code>Cancel</code> button is clicked the editor answers and the '
+        '<code>Html</code> widget is rendered back',
+        [14, 44]
     ),
 
     (
-        (17, 28, 38),
+        (19, 31, 41),
         '<p><code>to_valid_html()</code> is a dedicated form field validator</p>'
         '<p>A validation method is associated to a Property object through its '
         '<code>validate()</code> method</p>',
-        range(17, 22)+[28, 38]
+        range(19, 24)+[31, 41]
     ),
 
     (
-        (23,),
+        (26,),
         '<p>Definition of a Nagare Editor</p>'
         '<p>Its default view is a form</p>'
-        '<p><code>target</code> attribute is the edited <code>HtmlWidget</code> object</p>',
-        range(23, 44)
+        '<p><code>target</code> parameter is the edited <code>Html</code> widget</p>',
+        range(26, 47)
     )
 )

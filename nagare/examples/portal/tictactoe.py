@@ -73,7 +73,7 @@ class Task(component.Task):
 # -----------------------------------------------------------------------------
 
 hl_lines = (
-    range(1, 61),
+    range(12, 72),
     (
         (4,),
         'Definition of a Plain Old Python Object',
@@ -94,7 +94,7 @@ hl_lines = (
 
     (
         (33, 52),
-        '<p>Use of the Call/Answer mechanism: the task calls a TictacToe component</p>'
+        '<p>Use of the <code>call()/answer()</code> mechanism: the task calls a <code>TictacToe</code> component</p>'
         '<p>When an empty cell is clicked, the cell index is sent back to the task '
         'as <code>played</code></p>',
         (33, 52)

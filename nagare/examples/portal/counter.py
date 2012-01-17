@@ -60,7 +60,7 @@ def render(self, h, *args):
 # -----------------------------------------------------------------------------
 
 hl_lines = (
-    range(1, 48),
+    range(12, 60),
     (
         (13,),
         '<p>Default view for a <code>Counter</code> component</p>'
@@ -89,8 +89,8 @@ hl_lines = (
         (24,),
         '<p>Explicitly association of an anonymous function to  a link</p>'
         '<p>After a click an the link, the component will be rendered with its '
-        '<code>freeze</code> view: the <code>becomes()</code> method of the '
-        'component is used to change it by the same objet but with a different '
+        '<code>freezed</code> view: the <code>becomes()</code> method of the '
+        'component is used to change it by the same object but with a different '
         'view</p>',
         (24,)
     ),
