@@ -31,10 +31,12 @@ class Photo(object):
     def thumbnail(self):
         return str(PhotoData.get(self.id).thumbnail)
 
+
 @presentation.render_for(Photo)
 def render(self, h, comp, *args):
     img = h.img.action(self.img)
     return h.a(img).action(comp.answer)
+
 
 @presentation.render_for(Photo, model='thumbnail')
 def render(self, h, comp, *args):
@@ -61,7 +63,7 @@ class PhotoCreator(editor.Editor):
 
     def validate_img(self, img):
         if isinstance(img, basestring):
-            raise ValueError, 'Image not provided'
+            raise ValueError('Image not provided')
         return img.file.read()
 
     def commit(self, comp):
@@ -69,6 +71,7 @@ class PhotoCreator(editor.Editor):
         (haven't a value to their ``error`` attribute)"""
         if self.is_validated(('title', 'img')):
             comp.answer((self.title(), self.img.value))
+
 
 @presentation.render_for(PhotoCreator)
 def render(self, h, comp, *args):
@@ -104,6 +107,7 @@ class Gallery(object):
 
             gallery = GalleryData.get_by(name=self.name)
             gallery.photos.append(PhotoData(title=title, img=img, thumbnail=img))
+
 
 @presentation.render_for(Gallery)
 def render(self, h, comp, *args):

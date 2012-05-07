@@ -24,6 +24,7 @@ from wikidata import PageData
 
 wikiwords = re.compile(r'\b([A-Z]\w+[A-Z]+\w+)')
 
+
 class Page(object):
     def __init__(self, title):
         self.title = title
@@ -35,6 +36,7 @@ class Page(object):
             page = PageData.get_by(pagename=self.title)
             page.data = content
 
+
 @presentation.render_for(Page)
 def render(self, h, comp, *args):
     page = PageData.get_by(pagename=self.title)
@@ -45,10 +47,11 @@ def render(self, h, comp, *args):
 
     for node in html.getiterator():
         if node.tag == 'wiki':
-            a = h.a(node.text, href='page/'+node.text).action(lambda title=unicode(node.text): comp.answer(title))
+            a = h.a(node.text, href='page/' + node.text).action(lambda title=unicode(node.text): comp.answer(title))
             node.replace(a)
 
-    return (html, h.a('Edit this page', href='page/'+self.title).action(lambda: self.edit(comp)))
+    return (html, h.a('Edit this page', href='page/' + self.title).action(lambda: self.edit(comp)))
+
 
 @presentation.render_for(Page, model='meta')
 def render(self, h, comp, *args):
@@ -60,6 +63,7 @@ def render(self, h, comp, *args):
 class PageEditor(object):
     def __init__(self, page):
         self.page = page
+
 
 @presentation.render_for(PageEditor)
 def render(self, h, comp, *args):
@@ -76,6 +80,7 @@ def render(self, h, comp, *args):
         h << h.input(type='submit', value='Cancel').action(comp.answer)
 
     return h.root
+
 
 @presentation.render_for(PageEditor, model='meta')
 def render(self, h, *args):
@@ -97,6 +102,7 @@ class Wiki(object):
 
         self.content.becomes(Page(title))
 
+
 @presentation.render_for(Wiki)
 def render(self, h, comp, *args):
     h.head.css('main_css', '''
@@ -106,19 +112,20 @@ def render(self, h, comp, *args):
 
     with h.div(class_='meta'):
         h << self.content.render(h, model='meta')
-        
+
     h << self.content << h.hr
 
     h << 'View the ' << h.a('complete list of pages', href='all').action(lambda: self.goto(comp.call(self, model='all')))
-    
+
     return h.root
+
 
 @presentation.render_for(Wiki, model='all')
 def render(self, h, comp, *args):
     with h.ul:
         for page in PageData.query.order_by(PageData.pagename):
             with h.li:
-                h << h.a(page.pagename, href='page/'+page.pagename).action(lambda title=page.pagename: comp.answer(title))
+                h << h.a(page.pagename, href='page/' + page.pagename).action(lambda title=page.pagename: comp.answer(title))
 
     return h.root
 
@@ -126,13 +133,14 @@ def render(self, h, comp, *args):
 
 # Generic method to initialize the ``Wiki`` component from the URL
 
+
 # In this step, we only manage URL of the form '.../page/<page title>'
 @presentation.init_for(Wiki, "(len(url) == 2) and (url[0] == 'page')")
 def init(self, url, *args):
-    title = url[1] # Retrieve the page title. The condition of this generic
-                   # method already checks that the URL is of the form:
-                   # '.../page/<page title>'
-    
+    title = url[1]  # Retrieve the page title. The condition of this generic
+                    # method already checks that the URL is of the form:
+                    # '.../page/<page title>'
+
     # Check if a page with the wanted title exists
     page = PageData.get_by(pagename=title)
     if page is None:

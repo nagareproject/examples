@@ -12,9 +12,10 @@ from sqlalchemy import MetaData
 
 __metadata__ = MetaData()
 
+
 class PageData(Entity):
     pagename = Field(Unicode(40), primary_key=True)
-    data = Field(Unicode(10*1024))
+    data = Field(Unicode(10 * 1024))
     creator = Field(Unicode(40))
 
 # ---------------------------------------------------------------------------
@@ -24,7 +25,7 @@ def populate():
     page.pagename = u'FrontPage'
     page.data = u'Welcome to my *WikiWiki* !'
     page.creator = u'admin'
-    
+
     page = PageData()
     page.pagename = u'WikiWiki'
     page.data = u'On this *WikiWiki*, the page contents can be ' \

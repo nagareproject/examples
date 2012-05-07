@@ -17,21 +17,22 @@ import urllib
 
 from nagare import presentation
 
+
 class Image(object):
     """A proxy image object to an image on the net"""
     def __init__(self, title, url):
         """Initialization
-        
+
         In:
           - ``title`` -- title of the image
           - ``url`` -- url where to fetch the image data
         """
         self.title = title
         self.url = url
-        
+
     def send_image(self):
         """Read the image data
-        
+
         In:
           - ``h`` -- the current renderer
 
@@ -39,6 +40,7 @@ class Image(object):
           - the image data
         """
         return urllib.urlopen(self.url).read()
+
 
 @presentation.render_for(Image)
 def render(self, h, *args):

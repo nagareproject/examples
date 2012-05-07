@@ -13,9 +13,7 @@
 
 from __future__ import with_statement
 
-import datetime
-
-from nagare import component, presentation, var, editor, validator
+from nagare import component, presentation, editor, validator
 from nagare.examples import widgets
 
 # --------------------------------------------------------------------------
@@ -142,9 +140,9 @@ def render(self, h, *args):
             h << h.br
 
             h << 'Male'
-            h << h.input(type='radio', name='gender').selected(self.gender()=='male').action(lambda: self.gender('male'))
+            h << h.input(type='radio', name='gender').selected(self.gender() == 'male').action(lambda: self.gender('male'))
             h << ' Female'
-            h << h.input(type='radio', name='gender').selected(self.gender()=='female').action(lambda: self.gender('female'))
+            h << h.input(type='radio', name='gender').selected(self.gender() == 'female').action(lambda: self.gender('female'))
 
         with h.select(multiple='multiple').action(self.color):
             with h.optgroup(label='Colors'):
@@ -163,6 +161,7 @@ def render(self, h, *args):
         h << h.input(type='submit', value='Go')
 
     return h.root
+
 
 def example1():
     # Create a ``Form`` object, wrap it into a ``FormEditor`` and make it
@@ -230,9 +229,9 @@ def render(self, h, *args):
             h << h.br
 
             h << 'Male'
-            h << h.input(type='radio', name='gender').selected(self.gender()=='male').action(lambda: self.gender('male'))
+            h << h.input(type='radio', name='gender').selected(self.gender() == 'male').action(lambda: self.gender('male'))
             h << ' Female'
-            h << h.input(type='radio', name='gender').selected(self.gender()=='female').action(lambda: self.gender('female'))
+            h << h.input(type='radio', name='gender').selected(self.gender() == 'female').action(lambda: self.gender('female'))
 
         with h.select(multiple='multiple').action(self.color):
             with h.optgroup(label='Colors'):
@@ -256,6 +255,7 @@ def render(self, h, *args):
 class App:
     def __init__(self):
         self.editor = component.Component(FormEditor(Form()))
+
 
 @presentation.render_for(App)
 def render(self, h, *args):
@@ -288,6 +288,7 @@ class NameEditor(object):
         if not self.name.error:
             comp.answer(self.name())
 
+
 @presentation.render_for(NameEditor)
 def render(self, h, comp, *args):
     h.head.css_url('form.css')
@@ -302,6 +303,7 @@ def render(self, h, comp, *args):
         h << h.input(type='submit', value='Cancel').action(comp.answer)
 
         return h.root
+
 
 def edit_name(comp, row):
     """Edit the field ``name`` of a row (field #1)
@@ -322,6 +324,7 @@ def edit_name(comp, row):
     if name is not None:
         row[1] = name
 
+
 def example2():
     headers = ('id', 'name')        # Name of the fields
 
@@ -329,11 +332,11 @@ def example2():
 
     # Create an object that display a table
     table = widgets.Table(
-                          rows,                          # The data
-                          headers,                       # Names of the fields
-                          sortable_headers=headers,      # Names of the sortable fields
-                          colors=('lightblue', 'white'), # The background of the displayed lines cycle on these colors
-                          edit=edit_name                 # Callback to edit a line
+                          rows,                           # The data
+                          headers,                        # Names of the fields
+                          sortable_headers=headers,       # Names of the sortable fields
+                          colors=('lightblue', 'white'),  # The background of the displayed lines cycle on these colors
+                          edit=edit_name                  # Callback to edit a line
                          )
 
     return component.Component(table)
@@ -345,9 +348,9 @@ examples += ('Sortable data grid', example2)
 # This example illustrates the use of a predefined widget
 
 def example3():
-    headers = ('id', 'name')        # Name of the fields
+    headers = ('id', 'name')  # Name of the fields
 
-    rows = [(i, chr((i % 26)+97)*5) for i in range(1, 51)]
+    rows = [(i, chr((i % 26) + 97) * 5) for i in range(1, 51)]
     table = widgets.BatchedTable(rows, 12, headers, colors=('lightblue', 'white'))
 
     return component.Component(table)
@@ -378,6 +381,7 @@ class NamesEditor(object):
         if not any(name.error for name in self.names):
             comp.answer([name() for name in self.names])
 
+
 @presentation.render_for(NamesEditor)
 def render(self, h, comp, *args):
     h.head.css_url('form.css')
@@ -393,6 +397,7 @@ def render(self, h, comp, *args):
         h << h.input(type='submit', value='Annuler').action(comp.answer)
 
     return h.root
+
 
 def modify_rows(table, selected_rows):
     """Edit the field ``name`` of the selected row
@@ -413,6 +418,7 @@ def modify_rows(table, selected_rows):
     for (row, new) in zip(selected_rows, news):
         row[1] = new
 
+
 def reset_rows(table, selected_rows):
     """Reset the field ``name`` of the selected rows
 
@@ -422,6 +428,7 @@ def reset_rows(table, selected_rows):
     """
     for row in selected_rows:
         row[1] = 'Default value'
+
 
 def example4():
     rows = [[2, 'a'], [3, 'b'], [1, 'c']]

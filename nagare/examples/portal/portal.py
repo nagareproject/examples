@@ -21,6 +21,7 @@ from nagare.examples.jewels import Jewels
 from nagare.examples.portal import html, tictactoe, counter, calculator
 from nagare.examples.portal.source_viewer import SourceViewer
 
+
 class Portal(object):
     """The ``Portal`` object is only a container"""
 
@@ -33,6 +34,7 @@ class Portal(object):
         self.jewels = component.Component(Jewels(10, 10))
         self.gallery = component.Component(gallery7.app())
         self.html = component.Component(html.Html())
+
 
 @presentation.render_for(Portal)
 def render(self, h, comp, *args):
@@ -144,6 +146,7 @@ class App(object):
 
         self.portal.on_answer(lambda args: self.source.call(SourceViewer(*args)))
 
+
 @presentation.render_for(App)
 def render(self, h, comp, *args):
     h.head << h.head.title('Demonstration portal')
@@ -151,7 +154,7 @@ def render(self, h, comp, *args):
 
     with h.body:
         if self.source():
-            h << { 'style' : 'overflow: hidden' }
+            h << {'style': 'overflow: hidden'}
             h << h.div(id='overlay1')
             h << h.div(self.source, id='overlay2')
 

@@ -32,6 +32,7 @@ class Photo(object):
     def thumbnail(self):
         return str(PhotoData.get(self.id).thumbnail)
 
+
 @presentation.render_for(Photo, model='thumbnail')
 def render(self, h, *args):
     """View renamed to ``thumbnail``"""
@@ -49,10 +50,11 @@ class Gallery(object):
         """A gallery has a name"""
         self.name = name
 
+
 @presentation.render_for(Gallery)
 def render(self, h, *args):
     """The default view of a Gallery displays the list of the Photos"""
-    
+
     with h.div:
         h << h.h1('Gallery: ', self.name)
         h << h.br

@@ -31,10 +31,12 @@ class Photo(object):
     def thumbnail(self):
         return str(PhotoData.get(self.id).thumbnail)
 
+
 @presentation.render_for(Photo)
-def render(self, h, comp, *args):   
+def render(self, h, comp, *args):
     img = h.img.action(self.img)
     return h.a(img).action(comp.answer)
+
 
 @presentation.render_for(Photo, model='thumbnail')
 def render(self, h, comp, *args):
@@ -45,6 +47,7 @@ def render(self, h, comp, *args):
         h << h.i(' (%d octets)' % len(self.img()))
 
     return h.root
+
 
 # A PhotoCreator is defined, to download a new Photo
 class PhotoCreator(editor.Editor):
@@ -58,6 +61,7 @@ class PhotoCreator(editor.Editor):
         """After the submission of the form, the PhotoCreator answers the
            tuple (title of the photo, image data)"""
         comp.answer((self.title(), self.img.value.file.read()))
+
 
 @presentation.render_for(PhotoCreator)
 def render(self, h, comp, *args):
@@ -80,9 +84,9 @@ def render(self, h, comp, *args):
                     # The action on the "Add" button is to call ``self.commit``, i.e
                     # answer the tuple (title of the photo, image data)
                     h << h.input(type='submit', value='Add').action(lambda: self.commit(comp))
-                    
+
                     h << ' '
-                    
+
                     # The action on the "Cancel" button is to call ``comp.answer``, i.e
                     # answer ``None``
                     h << h.input(type='submit', value='Cancel').action(comp.answer)
@@ -99,10 +103,10 @@ class Gallery(object):
         """This method temporary replaces the Gallery component by a PhotoCreator
            component. Upon submission of a photo, the PhotoCreator answers with
            the title and the uploaded image"""
-           
+
         # Change the Gallery by a PhotoCreator component
         r = comp.call(PhotoCreator())
-        
+
         if r is not None:
             # If the user click on the the "Cancel" button, we receive ``None``
             # else we receive the title and the uploaded image
@@ -112,11 +116,12 @@ class Gallery(object):
             gallery = GalleryData.get_by(name=self.name)
             gallery.photos.append(PhotoData(title=title, img=img, thumbnail=img))
 
+
 @presentation.render_for(Gallery)
 def render(self, h, comp, *args):
     with h.div:
         h << h.h1('Gallery: ', self.name)
-        
+
         # In the default Gallery view, add a link to add a new photo
         h << h.a('Add photo').action(lambda: self.add_photo(comp))
 

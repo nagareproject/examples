@@ -12,7 +12,7 @@ title data from the database and display them
 """
 from __future__ import with_statement
 
-from nagare import presentation, component
+from nagare import presentation
 
 from gallerydata import *
 
@@ -20,7 +20,7 @@ from gallerydata import *
 
 class Photo(object):
     """A Photo
-    
+
     Its ``id`` is unique and is used to fetch the data from the database
     """
     def __init__(self, id):
@@ -38,6 +38,7 @@ class Photo(object):
     def thumbnail(self):
         """Return the thumbnail data"""
         return str(PhotoData.get(self.id).thumbnail)
+
 
 @presentation.render_for(Photo)
 def render(self, h, *args):

@@ -36,6 +36,7 @@ class Counter1:
     def decrease(self):
         self.v -= 1
 
+
 @presentation.render_for(Counter1)
 def render(self, h, comp, *args):
     """Same view but written in "imperative HTML"
@@ -62,6 +63,7 @@ def render(self, h, comp, *args):
             h << h.a(u'\N{PLUS SIGN}', title='increase').action(self.increase)
 
     return h.root
+
 
 @presentation.render_for(Counter1, model='freezed')
 def render(self, h, *args):
@@ -131,6 +133,7 @@ class Counter2:
     def __init__(self, start=0):
         self.v = Var(start)
 
+
 @presentation.render_for(Counter2)
 def render(self, h, comp, *args):
     """View with lambdas as actions
@@ -148,15 +151,16 @@ def render(self, h, comp, *args):
         h << h.div(self.v)
 
         with h.span:
-            h << h.a(u'\N{MINUS SIGN}', title='decrease').action(lambda: self.v(self.v()-1))
+            h << h.a(u'\N{MINUS SIGN}', title='decrease').action(lambda: self.v(self.v() - 1))
 
         with h.span:
             h << h.a('=', title='freeze').action(lambda: comp.becomes(self, model='freezed'))
 
         with h.span:
-            h << h.a(u'\N{PLUS SIGN}', title='increase').action(lambda: self.v(self.v()+1))
+            h << h.a(u'\N{PLUS SIGN}', title='increase').action(lambda: self.v(self.v() + 1))
 
     return h.root
+
 
 @presentation.render_for(Counter2, model='freezed')
 def render(self, h, *args):
@@ -205,6 +209,7 @@ class App:
         self.counter1 = component.Component(Counter1())
         self.counter2 = component.Component(Counter1())
 
+
 @presentation.render_for(App)
 def render(self, h, *args):
     self.nb_display += 1
@@ -246,6 +251,7 @@ class Counter4:
 
     def decrease(self):
         self.v -= 1
+
 
 @presentation.render_for(Counter4)
 def render(self, h, *args):
@@ -321,9 +327,11 @@ def render(self, h, *args):
 
     return h.root
 
+
 class App2:
     def __init__(self):
         self.counter = component.Component(Counter4(), model='without_id')
+
 
 @presentation.render_for(App2)
 def render(self, h, *args):

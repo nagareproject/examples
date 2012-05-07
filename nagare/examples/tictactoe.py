@@ -13,8 +13,6 @@ and a logic component implemented as a ``component.Task``
 
 from __future__ import with_statement
 
-import operator
-
 from nagare import component, presentation, util
 
 # ---------------------------------------------------------------------------
@@ -26,11 +24,11 @@ class TicTacToe:
         """Initialization
         """
         # TicTacToe board as a linear list of cell
-        self._board = [0]*9
+        self._board = [0] * 9
 
     def played(self, player, played):
         """A cell was played
-        
+
         In:
           - ``player`` -- id of the player that has played (1 or 2)
           - ``played`` -- the cell
@@ -39,7 +37,7 @@ class TicTacToe:
 
     def is_won(self):
         """Review all the cells played to check is the game is won
-        
+
         Return:
           - a boolean: is the game ended and won ?
         """
@@ -53,21 +51,22 @@ class TicTacToe:
     def is_ended(self):
         """Review all the cells playes to see if the game is ended (no more
         free cells)
-        
+
         Return:
           - a boolean: is the game ended ?
         """
         return all(self._board)
 
+
 @presentation.render_for(TicTacToe)
 def render(self, h, comp, *args):
     """Render the board in a table of 3*3 cells. The free cells are clickable
     and answer their indice
-    
+
     In:
       - ``h`` -- the renderer
       - ``comp`` -- the component
-      
+
     Return:
       - the view
     """
@@ -82,7 +81,7 @@ def render(self, h, comp, *args):
                         if x == 0:
                             h << h.a('-').action(lambda i=i: comp.answer(i))
                         else:
-                            h << ('X' if x==1 else 'O')
+                            h << ('X' if x == 1 else 'O')
 
                         i += 1
     return h.root
@@ -93,7 +92,7 @@ class Task(component.Task):
     """This ``component.Task`` uses continuations to implement the TicTacToe
     logic in pure linear Python code
     """
-    
+
     def go(self, comp):
         while True:
             # 1. Create the board
@@ -101,23 +100,23 @@ class Task(component.Task):
 
             # 2. Ask the names of the players
             players = (comp.call(util.Ask('Player #1')), comp.call(util.Ask('Player #2')))
-    
+
             player = 1
             # 3. Play the game until a player wins or there are no more free cells
             while not board.is_won() and not board.is_ended():
-                player = (player+1) & 1 # Toggle the player
-    
+                player = (player + 1) & 1  # Toggle the player
+
                 # Display the board and get the clicked cell
                 played = comp.call(component.Component(board))
-                
+
                 # Register the clicked cell
-                board.played(player+1, played)
-    
+                board.played(player + 1, played)
+
             if board.is_won():
-                msg =  'Player %s WON !' %  players[player]
+                msg = 'Player %s WON !' % players[player]
             else:
                 msg = 'Nobody WON !'
-    
+
             # 4. Display the end message
             comp.call(util.Confirm(msg))
 
@@ -136,6 +135,7 @@ class App(object):
     def __init__(self):
         self.inner = component.Component(Task())
 
+
 @presentation.render_for(App)
 def render(self, h, *args):
     return self.inner.render(h.AsyncRenderer())
@@ -152,6 +152,7 @@ class Double:
         # 2 different components of the same type
         self.left = component.Component(Task())
         self.right = component.Component(Task())
+
 
 @presentation.render_for(Double)
 def render(self, h, binding, *args):

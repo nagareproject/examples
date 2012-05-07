@@ -29,6 +29,7 @@ from wikidata import PageData
 class Login:
     pass
 
+
 @presentation.render_for(Login)
 def render(self, h, binding, *args):
     user = security.get_user()
@@ -51,6 +52,7 @@ def render(self, h, binding, *args):
 
 wikiwords = re.compile(r'\b([A-Z]\w+[A-Z]+\w+)')
 
+
 class Page(object):
     def __init__(self, title):
         self.title = title
@@ -70,6 +72,7 @@ class Page(object):
                 page.creator = security.get_user().id
                 log.debug('New creator for page [%s]: [%s]' % (page.pagename, page.creator))
 
+
 @presentation.render_for(Page)
 def render(self, h, comp, *args):
     page = PageData.get_by(pagename=self.title)
@@ -80,15 +83,16 @@ def render(self, h, comp, *args):
 
     for node in html.getiterator():
         if node.tag == 'wiki':
-            a = h.a(node.text, href='page/'+node.text).action(lambda title=unicode(node.text): comp.answer(title))
+            a = h.a(node.text, href='page/' + node.text).action(lambda title=unicode(node.text): comp.answer(title))
             node.replace(a)
 
     h << html
 
     if security.has_permissions('wiki.editor', self):
-        h << h.a('Edit this page', href='page/'+self.title).action(lambda: self.edit(comp))
+        h << h.a('Edit this page', href='page/' + self.title).action(lambda: self.edit(comp))
 
     return h.root
+
 
 # The meta data view now also displays the creator's name
 @presentation.render_for(Page, model='meta')
@@ -109,6 +113,7 @@ class PageEditor(object):
     def __init__(self, page):
         self.page = page
 
+
 @presentation.render_for(PageEditor)
 def render(self, h, comp, *args):
     content = var.Var()
@@ -124,6 +129,7 @@ def render(self, h, comp, *args):
         h << h.input(type='submit', value='Cancel').action(comp.answer)
 
     return h.root
+
 
 @presentation.render_for(PageEditor, model='meta')
 def render(self, h, *args):
@@ -147,6 +153,7 @@ class Wiki(object):
 
         self.content.becomes(Page(title))
 
+
 @presentation.render_for(Wiki)
 def render(self, h, comp, *args):
     h.head.css('main_css', '''
@@ -168,13 +175,14 @@ def render(self, h, comp, *args):
 
     return h.root
 
+
 @presentation.render_for(Wiki, model='all')
 @security.permissions('wiki.admin')
 def render(self, h, comp, *args):
     with h.ul:
         for page in PageData.query.order_by(PageData.pagename):
             with h.li:
-                h << h.a(page.pagename, href='page/'+page.pagename).action(lambda title=page.pagename: comp.answer(title))
+                h << h.a(page.pagename, href='page/' + page.pagename).action(lambda title=page.pagename: comp.answer(title))
 
     return h.root
 
@@ -190,6 +198,7 @@ def init(self, url, *args):
 
     self.goto(title)
 
+
 @presentation.init_for(Wiki, "len(url) and (url[0] == 'all')")
 def init(self, url, comp, *args):
     component.call_wrapper(lambda: self.goto(comp.call(self, model='all')))
@@ -199,8 +208,10 @@ def init(self, url, comp, *args):
 from peak.rules import when
 from nagare.security import common
 
+
 def flatten(*args):
     return sum([flatten(*x) if hasattr(x, '__iter__') else (x,) for x in args], ())
+
 
 class User(common.User):
     def __init__(self, id, roles=()):
@@ -214,6 +225,7 @@ editor_role = ('wiki.editor',)
 admin_role = ('wiki.admin', editor_role)
 
 from nagare.security import form_auth
+
 
 class Authentication(form_auth.Authentication):
     def get_password(self, username):

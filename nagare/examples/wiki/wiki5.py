@@ -8,7 +8,7 @@
 #--
 
 """Adding a second view to the Page and PageEditor component, displaying
-meta data about the current page and action. 
+meta data about the current page and action.
 """
 
 from __future__ import with_statement
@@ -35,6 +35,7 @@ class Page(object):
             page = PageData.get_by(pagename=self.title)
             page.data = content
 
+
 @presentation.render_for(Page)
 def render(self, h, comp, *args):
     page = PageData.get_by(pagename=self.title)
@@ -50,12 +51,13 @@ def render(self, h, comp, *args):
 
     return (html, h.a('Edit this page').action(lambda: self.edit(comp)))
 
+
 @presentation.render_for(Page, model='meta')
 def render(self, h, comp, *args):
     """Second view, called ``meta``, for the Page component
-    
+
     Display:
-    
+
       - the current action : 'Viewing'
       - the current page title
       - a link to return to the 'FrontPage' page
@@ -68,6 +70,7 @@ def render(self, h, comp, *args):
 class PageEditor(object):
     def __init__(self, page):
         self.page = page
+
 
 @presentation.render_for(PageEditor)
 def render(self, h, comp, *args):
@@ -85,15 +88,16 @@ def render(self, h, comp, *args):
 
     return h.root
 
+
 @presentation.render_for(PageEditor, model='meta')
 def render(self, h, *args):
     """Second view, called ``meta``, for the PageEditor component
-    
+
     Display:
-    
+
       - the current action : 'Editing'
       - the title of the current edited page
-    """    
+    """
     return ('Editing ', h.b(self.page.title))
 
 # ---------------------------------------------------------------------------
@@ -111,6 +115,7 @@ class Wiki(object):
             PageData(pagename=title, data='')
 
         self.content.becomes(Page(title))
+
 
 @presentation.render_for(Wiki)
 def render(self, h, *args):

@@ -3,10 +3,10 @@
 //   http://skypoetsworld.blogspot.com/2007/11/igoogle-and-newsvine-dashboards.html
 //--
 
-var Dom = YAHOO.util.Dom
+var Dom = YAHOO.util.Dom;
 
 var marker = document.createElement("div");
-Dom.addClass(marker, "marker")
+Dom.addClass(marker, "marker");
 
 function start_drag(x, y) {
     var el = this.getEl();
@@ -28,8 +28,8 @@ function start_drag(x, y) {
 }
 
 function end_drag(e, id) {
-    var dragEl = this.getDragEl()
-    Dom.batch(Dom.getChildren(dragEl), function (c) { dragEl.removeChild(c) })
+    var dragEl = this.getDragEl();
+    Dom.batch(Dom.getChildren(dragEl), function (c) { dragEl.removeChild(c); });
 
     marker.parentNode.replaceChild(this.getEl(), marker);
 }
@@ -43,13 +43,13 @@ function init_portlet(p) {
         drag.setHandleElId(handler);
 
         drag.startDrag = start_drag;
-        drag.onDragEnter = function (e, id) { Dom.insertBefore(marker, id) };
+        drag.onDragEnter = function (e, id) { Dom.insertBefore(marker, id); };
         drag.endDrag = end_drag;
     }
 }
 
 function init_portal() {
-    Dom.batch(Dom.getElementsByClassName("drop_zone"), function (zone) { new YAHOO.util.DDTarget(zone) });
+    Dom.batch(Dom.getElementsByClassName("drop_zone"), function (zone) { new YAHOO.util.DDTarget(zone); });
     Dom.batch(Dom.getElementsByClassName("portlet"), init_portlet);
 }
 

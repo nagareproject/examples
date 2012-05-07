@@ -29,11 +29,12 @@ class Page(object):
 
     def edit(self, comp):
         content = comp.call(PageEditor(self))
-        
+
         if content is not None:
             page = PageData.get_by(pagename=self.title)
             page.data = content
-        
+
+
 @presentation.render_for(Page)
 def render(self, h, comp, *args):
     page = PageData.get_by(pagename=self.title)
@@ -54,13 +55,14 @@ def render(self, h, comp, *args):
 class PageEditor(object):
     def __init__(self, page):
         self.page = page
-        
+
+
 @presentation.render_for(PageEditor)
 def render(self, h, comp, *args):
     content = var.Var()
 
     page = PageData.get_by(pagename=self.page.title)
-    
+
     with h.form:
         with h.textarea(rows='10', cols='40').action(content):
             h << page.data
@@ -68,7 +70,7 @@ def render(self, h, comp, *args):
         h << h.input(type='submit', value='Save').action(lambda: comp.answer(content()))
         h << ' '
         h << h.input(type='submit', value='Cancel').action(comp.answer)
-                                                             
+
     return h.root
 
 # ---------------------------------------------------------------------------
@@ -83,13 +85,13 @@ class Wiki(object):
         # A page answers the WikiWord clicked. Bind the answer to the ``goto()``
         # method
         self.content.on_answer(self.goto)
-        
+
         # The first displayed page is the ``FrontPage`` page
         self.goto(u'FrontPage')
 
     def goto(self, title):
         """Navigate to an other page
-        
+
         In:
           - ``title`` -- title of the new page to display
         """
@@ -98,17 +100,18 @@ class Wiki(object):
         if page is None:
             # The new page doesn't exist, create it in database
             PageData(pagename=title, data='')
-        
+
         # Permanently replace, into the component graph, the currently
         # displayed page by the new one
         self.content.becomes(Page(title))
-        
+
+
 @presentation.render_for(Wiki)
 def render(self, h, *args):
     h.head.css('main_css', '''
     .document:first-letter { font-size:2em }
     ''')
-    
+
     return self.content
 
 # ---------------------------------------------------------------------------

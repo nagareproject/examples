@@ -15,6 +15,7 @@ from pygments import highlight, lexers, formatters
 
 from nagare import presentation
 
+
 class HtmlFormatter(formatters.HtmlFormatter):
     def __init__(self, hl_lines, *args, **kw):
         super(HtmlFormatter, self).__init__(*args, **kw)
@@ -23,10 +24,10 @@ class HtmlFormatter(formatters.HtmlFormatter):
 
         for (i, (marker_lines, _, lines)) in enumerate(hl_lines):
             for marker_line in marker_lines:
-                self.marker_lines[marker_line-1] = i
+                self.marker_lines[marker_line - 1] = i
 
             for line in lines:
-                self.hl_lines.setdefault(line-1, []).append(i)
+                self.hl_lines.setdefault(line - 1, []).append(i)
 
     def wrap(self, source, outfile):
         return self._wrap(source)
@@ -47,9 +48,10 @@ class HtmlFormatter(formatters.HtmlFormatter):
 
 class SourceViewer(object):
     def __init__(self, comp, mod):
-        self.code = '\n'.join(line for i, line in enumerate(inspect.getsource(mod).splitlines()) if i+1 in mod.hl_lines[0])
+        self.code = '\n'.join(line for i, line in enumerate(inspect.getsource(mod).splitlines()) if (i + 1) in mod.hl_lines[0])
         self.comp = comp
         self.hl_lines = mod.hl_lines[1:]
+
 
 @presentation.render_for(SourceViewer)
 def render(self, h, comp, *args):
@@ -74,7 +76,6 @@ def render(self, h, comp, *args):
         with h.div(class_='right'):
             code = highlight(self.code, lexers.PythonLexer(), HtmlFormatter(self.hl_lines, nowrap=False, noclasses=True, linenos='inline'))
             h << h.pre(h.parse_htmlstring(code))
-
 
         h << h.script('init_sourceviewer()')
 

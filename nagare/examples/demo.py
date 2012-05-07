@@ -9,7 +9,7 @@
 
 from __future__ import with_statement
 
-from nagare import component, presentation, var
+from nagare import component, presentation
 
 # Modules where the examples are located
 import counter
@@ -33,6 +33,7 @@ class Menu(object):
         """
         self.labels = labels
         self._selected = selected   # The currently selected label
+
 
 @presentation.render_for(Menu)
 def render(self, h, comp, *args):
@@ -88,7 +89,7 @@ class Examples(object):
         In:
           - ``i`` -- index of the example to select
         """
-        self.selected_examples = i;
+        self.selected_examples = i
         self.module_name = self.examples[i][0]
 
         self.level1_menu.becomes(Menu([(label.capitalize(), label) for (label, _) in self.examples], i))
@@ -104,13 +105,14 @@ class Examples(object):
         selected_examples = self.examples[self.selected_examples][1]
         self.description = selected_examples[i][0]
 
-        self.example.becomes(selected_examples[i][1](), url='%s/%d' % (self.module_name, i+1))
+        self.example.becomes(selected_examples[i][1](), url='%s/%d' % (self.module_name, i + 1))
 
         if len(selected_examples) != 1:
-            labels = [('%s %d' % (self.module_name, j), j) for j in range(1, len(selected_examples)+1)]
+            labels = [('%s %d' % (self.module_name, j), j) for j in range(1, len(selected_examples) + 1)]
             self.level2_menu.becomes(Menu(labels, i), url=self.module_name)
         else:
             self.level2_menu.becomes(None)
+
 
 @presentation.render_for(Examples)
 def render(self, h, comp, *args):
@@ -134,7 +136,7 @@ def render(self, h, comp, *args):
                 if self.level2_menu():
                     h << h.div(self.level2_menu, id='steps')
 
-                with h.div(id='example', class_='example_right' if self.level2_menu() else 'example_full' ):
+                with h.div(id='example', class_='example_right' if self.level2_menu() else 'example_full'):
                     h << h.div(self.description, class_='note')
 
                     with h.div(id='source'):
@@ -157,6 +159,7 @@ def init(self, url, comp, http_method, request):
 
     self.change_example(example)
 
+
 @presentation.init_for(Examples, "len(url) >= 2 and http_method == 'GET'")
 def init(self, url, comp, http_method, request):
     comp.init(url[:1], http_method, request)
@@ -171,7 +174,7 @@ def init(self, url, comp, http_method, request):
     if (step <= 0) or (step > len(self.examples[self.selected_examples][1])):
         raise presentation.HTTPNotFound()
 
-    self.change_step(step-1)
+    self.change_step(step - 1)
 
     if len(url) > 2:
         self.example.init(url[2:], http_method, request)

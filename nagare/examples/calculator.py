@@ -12,6 +12,7 @@
 import operator
 from nagare import presentation
 
+
 class Calculator:
     """A RPN calculator object with methods to manage the stack
     """
@@ -72,6 +73,7 @@ class Calculator:
 
         return '0'
 
+
 @presentation.render_for(Calculator)
 def render(self, h, *args):
     """Rendering of the RPN calculator
@@ -123,4 +125,3 @@ def render(self, h, *args):
     return h.root
 
 examples = ('RPN calculator', Calculator)
-

@@ -25,7 +25,7 @@ def append_msg(msg):
     # Create the ``<li>`` element, filled with the message text
     li = document.createElement('li')
     li.appendChild(document.createTextNode(msg))
-    li.setAttribute('class', 'msg_type_'+msg.substring(0, 1))
+    li.setAttribute('class', 'msg_type_' + msg.substring(0, 1))
 
     msgs = document.getElementById('msgs')
 
@@ -54,6 +54,7 @@ class User(object):
         comp.answer(('part', self.user()))
         self.user(None)
 
+
 @presentation.render_for(User)
 def render(self, h, comp, *args):
     msg = var.Var()
@@ -64,7 +65,7 @@ def render(self, h, comp, *args):
 
         with h.form:
             h << "What's your name: " << h.input.action(self.user)
-            h << h.input(type='submit', value='Enter the room').action(lambda: comp.answer(('join', self.user())) )
+            h << h.input(type='submit', value='Enter the room').action(lambda: comp.answer(('join', self.user())))
     else:
         # If the user is connected, generate the form to enter and send a message
         # -----------------------------------------------------------------------
@@ -112,7 +113,7 @@ class Chat(object):
         In:
           - ``user`` -- the user name
         """
-        comet.channels.send(self.channel_id, 'join: '+user)
+        comet.channels.send(self.channel_id, 'join: ' + user)
 
     def part(self, user):
         """A user quits the chat room
@@ -120,7 +121,7 @@ class Chat(object):
         In:
           - ``user`` -- the user name
         """
-        comet.channels.send(self.channel_id, 'part: '+user)
+        comet.channels.send(self.channel_id, 'part: ' + user)
 
     def send(self, user, msg):
         """A user sends a message to the chat room
@@ -130,6 +131,7 @@ class Chat(object):
           - ``msg`` -- the message
         """
         comet.channels.send(self.channel_id, 'msg from %s: %s' % (user, msg))
+
 
 @presentation.render_for(Chat)
 def render(self, h, *args):
@@ -164,4 +166,3 @@ def render(self, h, *args):
 
 def app():
     return Chat('nagare_chat')
-

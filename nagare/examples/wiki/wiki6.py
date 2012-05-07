@@ -24,6 +24,7 @@ from wikidata import PageData
 
 wikiwords = re.compile(r'\b([A-Z]\w+[A-Z]+\w+)')
 
+
 class Page(object):
     def __init__(self, title):
         self.title = title
@@ -34,6 +35,7 @@ class Page(object):
         if content is not None:
             page = PageData.get_by(pagename=self.title)
             page.data = content
+
 
 @presentation.render_for(Page)
 def render(self, h, comp, *args):
@@ -50,6 +52,7 @@ def render(self, h, comp, *args):
 
     return (html, h.a('Edit this page').action(lambda: self.edit(comp)))
 
+
 @presentation.render_for(Page, model='meta')
 def render(self, h, comp, *args):
     return ('Viewing ', h.b(self.title), h.br, h.br,
@@ -61,10 +64,11 @@ class PageEditor(object):
     def __init__(self, page):
         self.page = page
 
+
 @presentation.render_for(PageEditor)
 def render(self, h, comp, *args):
     content = var.Var()
-    
+
     page = PageData.get_by(pagename=self.page.title)
 
     with h.form:
@@ -76,6 +80,7 @@ def render(self, h, comp, *args):
         h << h.input(type='submit', value='Cancel').action(comp.answer)
 
     return h.root
+
 
 @presentation.render_for(PageEditor, model='meta')
 def render(self, h, *args):
@@ -97,6 +102,7 @@ class Wiki(object):
 
         self.content.becomes(Page(title))
 
+
 @presentation.render_for(Wiki)
 def render(self, h, comp, *args):
     h.head.css('main_css', '''
@@ -106,22 +112,23 @@ def render(self, h, comp, *args):
 
     with h.div(class_='meta'):
         h << self.content.render(h, model='meta')
-        
+
     h << self.content << h.hr
-    
+
     # Link added with an action to:
     #   1. display the Wiki with its 'all' view
     #   2. go to the page which title in answered
     h << 'View the ' << h.a('complete list of pages').action(lambda: self.goto(comp.call(self, model='all')))
-    
+
     return h.root
+
 
 @presentation.render_for(Wiki, model='all')
 def render(self, h, comp, *args):
     """Second view, called ``all``, for the Wiki component
-    
+
     Display the titles of all the pages
-    """    
+    """
     with h.ul:
         # Retrieve all the pages from the database, ordered according to their titles
         for page in PageData.query.order_by(PageData.pagename):
