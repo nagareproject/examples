@@ -20,7 +20,7 @@ class Html:
 def default_view(self, h, comp, *args):
     with h.div:
         if self.content:
-            h << h.parse_htmlstring(self.content)
+            h << h.parse_htmlstring(self.content, fragment=True)
 
         h << h.a('Edit HTML').action(lambda: comp.call(HTMLEditor(self)))
 
