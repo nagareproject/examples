@@ -56,11 +56,11 @@ def render(self, h, comp, *args):
     for node in html.getiterator():
         if node.tag == 'wiki':
             # Clicking on a WikiWord will answer the WikiWord unicode string
-            a = h.a(node.text).action(lambda title=unicode(node.text): comp.answer(title))
+            a = h.a(node.text).action(comp.answer, unicode(node.text))
             # Replace the node
             node.replace(a)
 
-    return (html, h.a('Edit this page').action(lambda: self.edit(comp)))
+    return (html, h.a('Edit this page').action(self.edit, comp))
 
 # ---------------------------------------------------------------------------
 
@@ -68,6 +68,8 @@ class PageEditor(object):
     def __init__(self, page):
         self.page = page
 
+    def answer(self, comp, text):
+        comp.answer(text())
 
 @presentation.render_for(PageEditor)
 def render(self, h, comp, *args):
@@ -79,7 +81,7 @@ def render(self, h, comp, *args):
         with h.textarea(rows='10', cols='40').action(content):
             h << page.data
         h << h.br
-        h << h.input(type='submit', value='Save').action(lambda: comp.answer(content()))
+        h << h.input(type='submit', value='Save').action(self.answer, comp, content)
         h << ' '
         h << h.input(type='submit', value='Cancel').action(comp.answer)
 

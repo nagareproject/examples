@@ -14,6 +14,8 @@ callbacks
 from __future__ import with_statement
 
 from nagare import component, presentation
+from nagare import partial
+from nagare.continuation import has_continuation
 
 examples = ()
 
@@ -24,7 +26,7 @@ examples = ()
 # - shows how to add multiples web views on a Python object
 # - shows how to associate method actions to HTML elements
 
-class Counter1:
+class Counter1(object):
     """A simple counter with ``increase`` and ``decrease`` logics
     """
     def __init__(self, start=0):
@@ -57,7 +59,7 @@ def render(self, h, comp, *args):
             h << h.a(u'\N{MINUS SIGN}', title='decrease').action(self.decrease)
 
         with h.span:
-            h << h.a('=', title='freeze').action(lambda: comp.becomes(self, model='freezed'))
+            h << h.a('=', title='freeze').action(comp.becomes, self, 'freezed')
 
         with h.span:
             h << h.a(u'\N{PLUS SIGN}', title='increase').action(self.increase)
@@ -107,13 +109,16 @@ def render(self, h, comp, *args):
     Return:
       - the view of the referenced object
     """
+    h.head.css_url('counter.css')
+
     return (
-             h.div('Value: ', self.v),
-             h.a('++').action(self.increase),
-             '|',
-             h.a('--').action(self.decrease),
-             h.hr,
-             h.a('Freeze it !').action(lambda: comp.becomes(self, model='freeze'))
+            h.div(
+                h.div(self.v),
+                h.span(h.a(u'\N{MINUS SIGN}', title='decrease').action(self.decrease)),
+                h.span(h.a('=', title='freeze').action(comp.becomes, self, 'freezed')),
+                h.span(h.a(u'\N{PLUS SIGN}', title='increase').action(self.increase)),
+                class_='counter'
+            )
            )
 '''
 
@@ -126,7 +131,7 @@ def render(self, h, comp, *args):
 
 from nagare.var import Var
 
-class Counter2:
+class Counter2(Counter1):
     """The value is kept into a functional variable. Easier to work with,
     into lambda expressions.
     """
@@ -162,35 +167,8 @@ def render(self, h, comp, *args):
     return h.root
 
 
-@presentation.render_for(Counter2, model='freezed')
-def render(self, h, *args):
-    """An other view, displaying only the counter value, without any actions
-    possible
-
-    In:
-      - ``h`` -- the renderer
-      - ``comp`` -- the component
-
-    Return:
-      - the view of the referenced object
-    """
-    h.head.css_url('counter.css')
-
-    with h.div(class_='counter'):
-        h << h.div(self.v)
-
-        with h.span:
-            h << h.a(u'\N{MINUS SIGN}', class_='disabled')
-
-        with h.span:
-            h << h.a('=', class_='disabled')
-
-        with h.span:
-            h << h.a(u'\N{PLUS SIGN}', class_='disabled')
-
-    return h.root
-
-examples += ('Multiple views and lambdas callbacks', Counter2)
+if has_continuation:
+    examples += ('Multiple views and lambdas callbacks', Counter2)
 
 # ---------------------------------------------------------------------
 
@@ -200,7 +178,7 @@ examples += ('Multiple views and lambdas callbacks', Counter2)
 # - shows that the code of a component doesn't need to be modified to
 #   become asynchronous
 
-class App:
+class App(object):
     def __init__(self):
         # Incremented each time the page is fully re-generated
         self.nb_display = 0
@@ -242,7 +220,7 @@ examples += ('Automatic use of asynchronous requests/updates', App)
 
 from nagare import ajax
 
-class Counter4:
+class Counter4(object):
     def __init__(self, start=0):
         self.v = start
 
@@ -251,6 +229,9 @@ class Counter4:
 
     def decrease(self):
         self.v -= 1
+
+    def generate_response(self, h):
+        return str(self.v)
 
 
 @presentation.render_for(Counter4)
@@ -261,13 +242,13 @@ def render(self, h, *args):
         h << h.div(self.v, id='value')
 
         with h.span:
-            h << h.a(u'\N{MINUS SIGN}', title='decrease').action(ajax.Update(lambda h: str(self.v), self.decrease, 'value'))
+            h << h.a(u'\N{MINUS SIGN}', title='decrease').action(ajax.Update(self.generate_response, self.decrease, 'value'))
 
         with h.span:
             h << h.a('=', class_='disabled')
 
         with h.span:
-            h << h.a(u'\N{PLUS SIGN}', title='increase').action(ajax.Update(lambda h: str(self.v), self.increase, 'value'))
+            h << h.a(u'\N{PLUS SIGN}', title='increase').action(ajax.Update(self.generate_response, self.increase, 'value'))
 
     return h.root
 
@@ -294,7 +275,7 @@ def render(self, h, *args):
             #   - calls ``self.increase`` as action
             #   - calls ``lambda h: str(self.v)`` to render the view
             #   - updates the given HTML element
-            h.a('++').action(ajax.Update(lambda h: str(self.v), self.increase, div)),
+            h.a('++').action(ajax.Update(self.generate_response, self.increase, div)),
 
             ' | ',
 
@@ -303,7 +284,7 @@ def render(self, h, *args):
             #   - calls ``self.decrease`` as action
             #   - calls ``lambda h: str(self.v)`` to render the view
             #   - updates the given HTML element
-            h.a('--').action(ajax.Update(lambda h: str(self.v), self.decrease, div)),
+            h.a('--').action(ajax.Update(self.generate_response, self.decrease, div)),
            )
 """
 
@@ -317,18 +298,18 @@ def render(self, h, *args):
         h << div
 
         with h.span:
-            h << h.a(u'\N{MINUS SIGN}', title='decrease').action(ajax.Update(lambda h: str(self.v), self.decrease, div))
+            h << h.a(u'\N{MINUS SIGN}', title='decrease').action(ajax.Update(self.generate_response, self.decrease, div))
 
         with h.span:
             h << h.a('=', class_='disabled')
 
         with h.span:
-            h << h.a(u'\N{PLUS SIGN}', title='increase').action(ajax.Update(lambda h: str(self.v), self.increase, div))
+            h << h.a(u'\N{PLUS SIGN}', title='increase').action(ajax.Update(self.generate_response, self.increase, div))
 
     return h.root
 
 
-class App2:
+class App2(object):
     def __init__(self):
         self.counter = component.Component(Counter4(), model='without_id')
 

@@ -14,9 +14,12 @@
 from __future__ import with_statement
 
 from nagare import component, presentation, editor, validator
+from nagare.continuation import has_continuation
 from nagare.examples import widgets
 
 # --------------------------------------------------------------------------
+
+examples = ()
 
 class Form(object):
     """Object to edit"""
@@ -49,8 +52,8 @@ class FormEditor(editor.Editor):
         super(FormEditor, self).__init__(target, self.fields)
 
         # Set the conversion and validation rules on the properties
-        self.age.validate(lambda v: validator.to_int(v).lesser_than(50).greater_than(10).to_int())
-        self.area.validate(lambda v: validator.to_string(v, strip=True).not_empty().match(r'^[a-d]+$').to_string())
+        self.age.validate(validator.to_int().lesser_than(50).greater_than(10))
+        self.area.validate(validator.to_string(strip=True).not_empty().match(r'^[a-d]+$'))
 
         # A property can also be manually created
         self.file = editor.Property().validate(self.validate_file)
@@ -140,9 +143,9 @@ def render(self, h, *args):
             h << h.br
 
             h << 'Male'
-            h << h.input(type='radio', name='gender').selected(self.gender() == 'male').action(lambda: self.gender('male'))
+            h << h.input(type='radio', name='gender').selected(self.gender() == 'male').action(self.gender, 'male')
             h << ' Female'
-            h << h.input(type='radio', name='gender').selected(self.gender() == 'female').action(lambda: self.gender('female'))
+            h << h.input(type='radio', name='gender').selected(self.gender() == 'female').action(self.gender, 'female')
 
         with h.select(multiple='multiple').action(self.color):
             with h.optgroup(label='Colors'):
@@ -168,7 +171,7 @@ def example1():
     # a component
     return component.Component(FormEditor(Form()))
 
-examples = ('Form with validation rules and "inline" error notifications', example1)
+examples += ('Form with validation rules and "inline" error notifications', example1)
 
 # ---------------------------------------------------------------------------
 
@@ -229,9 +232,9 @@ def render(self, h, *args):
             h << h.br
 
             h << 'Male'
-            h << h.input(type='radio', name='gender').selected(self.gender() == 'male').action(lambda: self.gender('male'))
+            h << h.input(type='radio', name='gender').selected(self.gender() == 'male').action(self.gender, 'male')
             h << ' Female'
-            h << h.input(type='radio', name='gender').selected(self.gender() == 'female').action(lambda: self.gender('female'))
+            h << h.input(type='radio', name='gender').selected(self.gender() == 'female').action(self.gender, 'female')
 
         with h.select(multiple='multiple').action(self.color):
             with h.optgroup(label='Colors'):
@@ -277,7 +280,7 @@ class NameEditor(object):
           - ``name`` -- initial value of the text field
         """
         # Create a property. The text must be not empty
-        self.name = editor.Property(name).validate(lambda v: validator.to_string(v, strip=True).not_empty().to_string())
+        self.name = editor.Property(name).validate(validator.to_string(strip=True).not_empty())
 
     def commit(self, comp):
         """If no error, answer the text
@@ -297,7 +300,7 @@ def render(self, h, comp, *args):
         h << 'Name: ' << h.input(value=self.name()).action(self.name).error(self.name.error)
 
         # On submit, the component answers the text
-        h << h.input(type='submit', value='Change').action(lambda: self.commit(comp)) << ' '
+        h << h.input(type='submit', value='Change').action(self.commit, comp) << ' '
 
         # On cancel, the component answers ``None``
         h << h.input(type='submit', value='Cancel').action(comp.answer)
@@ -332,11 +335,11 @@ def example2():
 
     # Create an object that display a table
     table = widgets.Table(
-                          rows,                           # The data
-                          headers,                        # Names of the fields
-                          sortable_headers=headers,       # Names of the sortable fields
-                          colors=('lightblue', 'white'),  # The background of the displayed lines cycle on these colors
-                          edit=edit_name                  # Callback to edit a line
+                          rows,                                         # The data
+                          headers,                                      # Names of the fields
+                          sortable_headers=headers,                     # Names of the sortable fields
+                          colors=('lightblue', 'white'),                # The background of the displayed lines cycle on these colors
+                          edit=edit_name if has_continuation else None  # Callback to edit a line
                          )
 
     return component.Component(table)
@@ -370,7 +373,7 @@ class NamesEditor(object):
         In:
           - ``names`` -- list of name to edit
         """
-        self.names = [editor.Property(name).validate(lambda v: validator.to_string(v, strip=True).not_empty().to_string()) for name in names]
+        self.names = [editor.Property(name).validate(validator.to_string(strip=True).not_empty()) for name in names]
 
     def commit(self, comp):
         """If all the fields are valid, answer the modified fields
@@ -392,7 +395,7 @@ def render(self, h, comp, *args):
                 h << 'Name: '
                 h << h.input(value=name()).action(name).error(name.error)
 
-        h << h.input(type='submit', value='Changer').action(lambda: self.commit(comp))
+        h << h.input(type='submit', value='Changer').action(self.commit, comp)
         h << ' '
         h << h.input(type='submit', value='Annuler').action(comp.answer)
 
@@ -441,4 +444,5 @@ def example4():
                                     edit=(('Modifier', modify_rows), ('Reset', reset_rows))
                                    )
 
-examples += ("Grid data with multiple actions", example4)
+if has_continuation:
+    examples += ("Grid data with multiple actions", example4)

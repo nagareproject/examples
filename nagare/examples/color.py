@@ -12,6 +12,7 @@ call/answer of components"""
 
 from nagare import component
 from nagare import presentation
+from nagare.continuation import has_continuation
 
 
 class ColorChooser:
@@ -31,13 +32,13 @@ def render(self, h, comp, *args):
       - the view
     """
     return (
-            h.a('X', style='background-color: #4B96FF').action(lambda: comp.answer('#4B96FF')),
-            h.a('X', style='background-color: #FF8FDF').action(lambda: comp.answer('#FF8FDF')),
-            h.a('X', style='background-color: #9EFF5D').action(lambda: comp.answer('#9EFF5D')),
-            h.a('X', style='background-color: #FFFFFF').action(lambda: comp.answer('#FFFFFF'))
+            h.a('X', style='background-color: #4B96FF').action(comp.answer, '#4B96FF'),
+            h.a('X', style='background-color: #FF8FDF').action(comp.answer, '#FF8FDF'),
+            h.a('X', style='background-color: #9EFF5D').action(comp.answer, '#9EFF5D'),
+            h.a('X', style='background-color: #FFFFFF').action(comp.answer, '#FFFFFF')
            )
     # Could also be written as:
-    #return [h.a('X', style='background-color:' + color).action(lambda c=color: comp.answer(c))
+    #return [h.a('X', style='background-color:' + color).action(comp.answer, color)
     #        for color in ('#4B96FF', '#FF8FDF', '#9EFF5D', '#FFFFFF')]
 
 """
@@ -180,12 +181,13 @@ def render(self, h, comp, *args):
       - the view
     """
     return (
-             h.a('Change the color').action(lambda: self.change_text_color(comp)),
+             h.a('Change the color').action(self.change_text_color, comp),
              h.br,
              self.text,
             )
 
-examples += ("Call / answer of a component", App2)
+if has_continuation:
+    examples += ("Call / answer of a component", App2)
 
 # -------------------------------------------------------------------------------------------------------
 
@@ -237,4 +239,5 @@ def render(self, h, *args):
     return h.table(h.tr(h.td(self.left, align='center'),
                         h.td(self.right, align='center')))
 
-examples += ('2 independante components', Double)
+if has_continuation:
+    examples += ('2 independante components', Double)

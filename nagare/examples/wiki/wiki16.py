@@ -20,14 +20,15 @@ from __future__ import with_statement
 import re
 import docutils.core
 
-from nagare import component, presentation, var, security, wsgi, log
+from nagare import component, presentation, var, continuation, security, wsgi, log
 
 from wikidata import PageData
 
 # ---------------------------------------------------------------------------
 
 class Login:
-    pass
+    def logout(self):
+        security.get_manager().logout()
 
 
 @presentation.render_for(Login)
@@ -43,7 +44,7 @@ def render(self, h, binding, *args):
     else:
         html = (
                 'Welcome ', h.b(user.id), h.br,
-                h.a('logout').action(lambda: security.get_manager().logout())
+                h.a('logout').action(self.logout)
                )
 
     return html
@@ -83,13 +84,13 @@ def render(self, h, comp, *args):
 
     for node in html.getiterator():
         if node.tag == 'wiki':
-            a = h.a(node.text, href='page/' + node.text).action(lambda title=unicode(node.text): comp.answer(title))
+            a = h.a(node.text, href='page/' + node.text).action(comp.answer, unicode(node.text))
             node.replace(a)
 
     h << html
 
     if security.has_permissions('wiki.editor', self):
-        h << h.a('Edit this page', href='page/' + self.title).action(lambda: self.edit(comp))
+        h << h.a('Edit this page', href='page/' + self.title).action(self.edit, comp)
 
     return h.root
 
@@ -113,6 +114,9 @@ class PageEditor(object):
     def __init__(self, page):
         self.page = page
 
+    def answer(self, comp, text):
+        comp.answer(text())
+
 
 @presentation.render_for(PageEditor)
 def render(self, h, comp, *args):
@@ -124,7 +128,7 @@ def render(self, h, comp, *args):
         with h.textarea(rows='10', cols='40').action(content):
             h << page.data
         h << h.br
-        h << h.input(type='submit', value='Save').action(lambda: comp.answer(content()))
+        h << h.input(type='submit', value='Save').action(self.answer, comp, content)
         h << ' '
         h << h.input(type='submit', value='Cancel').action(comp.answer)
 
@@ -149,9 +153,13 @@ class Wiki(object):
         page = PageData.get_by(pagename=title)
         if page is None:
             log.info('New wiki page: [%s]' % title)
-            PageData(pagename=title, data='')
+            PageData(pagename=title, data=u'')
 
         self.content.becomes(Page(title))
+
+    def select_a_page(self, comp):
+        new_page = comp.call(model='all')
+        self.goto(new_page)
 
 
 @presentation.render_for(Wiki)
@@ -171,7 +179,7 @@ def render(self, h, comp, *args):
     h << self.content << h.hr
 
     if security.has_permissions('wiki.admin', self):
-        h << 'View the ' << h.a('complete list of pages', href='all').action(lambda: self.goto(comp.call(self, model='all')))
+        h << 'View the ' << h.a('complete list of pages', href='all').action(self.select_a_page, comp)
 
     return h.root
 
@@ -182,7 +190,7 @@ def render(self, h, comp, *args):
     with h.ul:
         for page in PageData.query.order_by(PageData.pagename):
             with h.li:
-                h << h.a(page.pagename, href='page/' + page.pagename).action(lambda title=page.pagename: comp.answer(title))
+                h << h.a(page.pagename, href='page/' + page.pagename).action(comp.answer, page.pagename)
 
     return h.root
 
@@ -201,7 +209,7 @@ def init(self, url, *args):
 
 @presentation.init_for(Wiki, "len(url) and (url[0] == 'all')")
 def init(self, url, comp, *args):
-    component.call_wrapper(lambda: self.goto(comp.call(self, model='all')))
+    continuation.Continuation(self.select_a_page, comp)
 
 # ---------------------------------------------------------------------------
 

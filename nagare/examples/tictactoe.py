@@ -14,8 +14,11 @@ and a logic component implemented as a ``component.Task``
 from __future__ import with_statement
 
 from nagare import component, presentation, util
+from nagare.continuation import has_continuation
 
 # ---------------------------------------------------------------------------
+
+examples = ()
 
 class TicTacToe:
     """The TicTacToe board
@@ -120,7 +123,8 @@ class Task(component.Task):
             # 4. Display the end message
             comp.call(util.Confirm(msg))
 
-examples = ("Using a component.Task() to implement the game logic", Task)
+if has_continuation:
+    examples += ("Using a component.Task() to implement the game logic", Task)
 
 
 # ---------------------------------------------------------------------------
@@ -140,7 +144,8 @@ class App(object):
 def render(self, h, *args):
     return self.inner.render(h.AsyncRenderer())
 
-examples += ('Automatic use of asynchronous requests/updates', App)
+if has_continuation:
+    examples += ('Automatic use of asynchronous requests/updates', App)
 
 # ---------------------------------------------------------------------------
 
@@ -175,4 +180,5 @@ def render(self, h, binding, *args):
 
     return h.root
 
-examples += ('Mixing 2 synchronous / asynchronous components', Double)
+if has_continuation:
+    examples += ('Mixing 2 synchronous / asynchronous components', Double)

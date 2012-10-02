@@ -7,7 +7,7 @@
 # this distribution.
 #--
 
-VERSION = '0.3.0'
+VERSION = '0.3.1'
 
 from setuptools import setup, find_packages
 
@@ -32,7 +32,7 @@ setup(
       use_hg_version=True,
       zip_safe=False,
       dependency_links=('http://www.nagare.org/download/',),
-      install_requires=('nagare[database,doc]>=0.4.0', 'PIL'),
+      install_requires=('nagare[database,doc]>0.4.1', 'PIL'),
       namespace_packages=('nagare', 'nagare.examples',),
       entry_points='''
       [nagare.applications]

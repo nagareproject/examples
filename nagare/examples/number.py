@@ -10,8 +10,11 @@
 import random
 
 from nagare import component, util, state
+from nagare.continuation import has_continuation
 
 # ---------------------------------------------------------------------------
+
+examples = ()
 
 class Number(component.Task):
     """A little game to guess a number
@@ -59,7 +62,8 @@ def example1():
 Now use the 'back' button to cheat : go back to the first attempt and enter the correct number''')
     return number
 
-examples = ('A statefull component', example1)
+if has_continuation:
+    examples = ('A statefull component', example1)
 
 # ---------------------------------------------------------------------------
 
@@ -74,4 +78,5 @@ Now use the 'back' button to cheat : you CAN'T''')
 
     return number
 
-examples += ('A stateless component', example2)
+if has_continuation:
+    examples += ('A stateless component', example2)

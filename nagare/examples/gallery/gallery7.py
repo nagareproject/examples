@@ -11,7 +11,7 @@
 
 from __future__ import with_statement
 
-from nagare import presentation, component, editor, validator
+from nagare import presentation, component, editor, validator, continuation
 
 from gallerydata import *
 import thumb
@@ -44,7 +44,7 @@ def render(self, h, comp, *args):
     with h.div:
         h << h.img.action(self.thumbnail)
         h << h.br
-        h << h.a(self.title).action(lambda: comp.answer(self))
+        h << h.a(self.title).action(comp.answer, self)
         h << h.i(' (%d octets)' % len(self.img()))
 
     return h.root
@@ -55,7 +55,7 @@ class PhotoCreator(editor.Editor):
         self.title = editor.Property(None)
         self.img = editor.Property(None)
 
-        self.title.validate(lambda t: validator.to_string(t).not_empty().to_string())
+        self.title.validate(validator.to_string().not_empty().to_string())
         self.img.validate(self.validate_img)
 
     def validate_img(self, img):
@@ -79,9 +79,9 @@ def render(self, h, comp, *args):
                 h << h.td('Image') << h.td(':') << h.td(h.input(type='file').action(self.img).error(self.img.error))
 
             with h.tr:
-                h << h.td() << h.td()
+                h << h.td << h.td
                 with h.td:
-                    h << h.input(type='submit', value='Add', id='submitbutton').action(lambda: self.commit(comp))
+                    h << h.input(type='submit', value='Add', id='submitbutton').action(self.commit, comp)
                     h << ' '
                     h << h.input(type='submit', value='Cancel', id='submitbutton').action(comp.answer)
 
@@ -92,8 +92,22 @@ def render(self, h, comp, *args):
 class Gallery(object):
     def __init__(self, name):
         self.name = name
+        self.photos = []
         if GalleryData.get_by(name=name) is None:
             GalleryData(name=name)
+
+    def get_photos(self):
+        """Use the database relation to get all the photos of this gallery
+
+        Return:
+           ``Photo()`` components
+        """
+        photos = GalleryData.get_by(name=self.name).photos
+
+        # Create a Photo object with the id of the photo then make it a component
+        # The url for a photo is its title
+        self.photos = [component.Component(Photo(p.id), url=p.title) for p in photos]
+        return self.photos
 
     def add_photo(self, comp):
         r = comp.call(PhotoCreator())
@@ -122,15 +136,11 @@ def render(self, h, comp, *args):
 
     with h.div:
         h << h.h1('Gallery: ', self.name)
-        h << h.a('Add photo', style='float: right').action(lambda: self.add_photo(comp))
+        h << h.a('Add photo', style='float: right').action(self.add_photo, comp)
         h << h.br
 
         with h.ul(class_='photo_list'):
-            for p in GalleryData.get_by(name=self.name).photos:
-
-                # The url for a photo is its title
-                photo = component.Component(Photo(p.id), url=p.title)
-
+            for photo in self.get_photos():
                 photo.on_answer(comp.call)
 
                 h << h.li(photo.render(h, model='thumbnail'))
@@ -151,7 +161,7 @@ def init(self, url, comp, *args):
     photo = component.Component(Photo(photo_data.id))
 
     # Temporary change the Gallery (the ``comp``) with the photo
-    component.call_wrapper(lambda: comp.call(photo))
+    continuation.Continuation(comp.call, photo)
 
 # ---------------------------------------------------------------------------
 

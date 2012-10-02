@@ -14,7 +14,7 @@
 
 from __future__ import with_statement
 
-from nagare import component, presentation, var
+from nagare import component, presentation, var, partial
 
 # -----------------------------------------------------------------------------------------
 
@@ -118,6 +118,10 @@ class Table(object):
             # By default, sort on the first column
             self.sort_by(headers[0])
 
+    @classmethod
+    def itemgetter(cls, t, i):
+        return t[i]
+
     def sort_by(self, name, reverse=False):
         """Criteria of the sort
 
@@ -128,7 +132,7 @@ class Table(object):
         self.sort_header = name
         self.reverse = reverse
         i = self.headers.index(name)
-        self.sort_criteria = lambda x: x[i]
+        self.sort_criteria = partial.Partial(self.itemgetter, i=i)
 
     def sort(self, name):
         """Criteria of the sort
@@ -149,7 +153,7 @@ def render(self, h, comp, *args):
     for header in self.headers:
         if header in self.sortable_headers:
             # Sortable header: display its name in an active link
-            headers.append(h.a(header).action(lambda name=header: self.sort(name)))
+            headers.append(h.a(header).action(self.sort, header))
         else:
             # No sortable header: display only its name
             headers.append(header)
@@ -163,7 +167,7 @@ def render(self, h, comp, *args):
                 h << [h.td(column) for column in row]
 
                 if self.edit is not None:
-                    h << h.td(h.a('edit').action(lambda row=row: self.edit(comp, row)))
+                    h << h.td(h.a('edit').action(self.edit, comp, row))
 
     return h.root
 
@@ -183,17 +187,28 @@ class BatchedTable(object):
           - ``colors`` -- list of background colors
         """
         self.rows = rows
-        self.offset = var.Var(0)
+        self.offset = 0
         self.size = size
         self.headers = list(headers)
         self.colors = colors
+
+    def add_to_offset(self, v):
+        """Change the offset value
+
+        In:
+          - ``v`` -- value to add or subtract to the offset
+        """
+        new_offset = self.offset + v
+
+        if (new_offset >= 0) and (new_offset < len(self.rows)):
+            self.offset = new_offset
 
 
 @presentation.render_for(BatchedTable)
 def render(self, h, *args):
     # Dynamically create a ``Table`` component, with the subset of the data
     table = Table(
-               self.rows[self.offset():self.offset() + self.size],
+               self.rows[self.offset:self.offset + self.size],
                self.headers, (),
                self.colors
                )
@@ -201,9 +216,9 @@ def render(self, h, *args):
     # Display the table and the actions
     return (
             component.Component(table),
-            h.a('<previous').action(lambda: self.offset(self.offset() - self.size)) if (self.offset() - self.size) >= 0 else '',
+            h.a('<previous').action(self.add_to_offset, -self.size),
             ' | ',
-            h.a('next>').action(lambda: self.offset(self.offset() + self.size)) if (self.offset() + self.size) < len(self.rows) else ''
+            h.a('next>').action(self.add_to_offset, self.size)
            )
 
 # ---------------------------------------------------------------------------
@@ -231,6 +246,9 @@ class SelectionTable(Table):
         """
         self.selected = []
 
+    def select(self, v, _):
+        self.selected.append(v)
+
     def go(self, comp, f):
         """Call a function with the selected rows
 
@@ -251,7 +269,7 @@ def render(self, h, comp, *args):
     for header in self.headers:
         if header in self.sortable_headers:
             # Sortable header: display its name in an active link
-            headers.append(h.a(header).action(lambda name=header: self.sort(name)))
+            headers.append(h.a(header).action(self.sort, header))
         else:
             # No sortable header: display only its name
             headers.append(header)
@@ -266,12 +284,12 @@ def render(self, h, comp, *args):
                 with h.tr(bgcolor=self.colors[i % len(self.colors)]):
                     # Add a column with checkboxes
                     with h.td:
-                        h << h.input(type='checkbox').action(lambda v, row=row: self.selected.append(row))
+                        h << h.input(type='checkbox').action(self.select, row)
 
                     h << [h.td(column) for column in row]
 
         # Display the action buttons
-        h << [h.input(type='submit', value=name).action(lambda f=f: self.go(comp, f)) for (name, f) in self.edit]
+        h << [h.input(type='submit', value=name).action(self.go, comp, f) for (name, f) in self.edit]
 
         return h.root
 

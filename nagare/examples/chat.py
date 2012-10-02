@@ -51,7 +51,7 @@ class User(object):
         In:
           - ``comp`` -- this component
         """
-        comp.answer(('part', self.user()))
+        comp.answer(('part', self.user))
         self.user(None)
 
 
@@ -65,17 +65,17 @@ def render(self, h, comp, *args):
 
         with h.form:
             h << "What's your name: " << h.input.action(self.user)
-            h << h.input(type='submit', value='Enter the room').action(lambda: comp.answer(('join', self.user())))
+            h << h.input(type='submit', value='Enter the room').action(comp.answer, ('join', self.user))
     else:
         # If the user is connected, generate the form to enter and send a message
         # -----------------------------------------------------------------------
 
         with h.div:
-            h << h.a('Logout').action(lambda: self.logout(comp))
+            h << h.a('Logout').action(self.logout, comp)
 
             with h.form:
                 h << h.input(size=50).action(msg) << ' '
-                h << h.input(type='submit', value='Send').action(lambda: comp.answer(('send', self.user(), msg())))
+                h << h.input(type='submit', value='Send').action(comp.answer, ('send', self.user, msg))
 
     return h.root
 
@@ -105,7 +105,7 @@ class Chat(object):
         In:
           - ``args`` -- ``args[0]`` is the action name, ``args[1:]`` its parameters
         """
-        getattr(Chat, args[0])(self, *args[1:])
+        getattr(Chat, args[0])(self, *(x() for x in args[1:]))
 
     def join(self, user):
         """A user enters the chat room

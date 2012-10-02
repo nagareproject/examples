@@ -54,7 +54,7 @@ def render(self, h, comp, *args):
         h << h.pre(page.data)
 
         # This link is added to every page displayed, to be able to edit it
-        h << h.a('Edit this page').action(lambda: self.edit(comp))
+        h << h.a('Edit this page').action(self.edit, comp)
 
     return h.root
 
@@ -71,10 +71,19 @@ class PageEditor(object):
         """
         self.page = page
 
+    def answer(self, comp, text):
+        """Quit this ``PageEditor`` component, answering the entered text
+
+        In:
+          - ``comp`` -- the component wrapping ``self``
+          - ``text`` -- a ``var.Var()`` with the text of the page
+        """
+        comp.answer(text())
+
 
 @presentation.render_for(PageEditor)
 def render(self, h, comp, *args):
-    content = var.Var() # Local functional variable that will keep the new page content
+    content = var.Var()  # Local functional variable that will keep the new page content
 
     # Retrieve the database object
     page = PageData.get_by(pagename=self.page.title)
@@ -84,7 +93,7 @@ def render(self, h, comp, *args):
             h << page.data
         h << h.br
         # Clicking on 'Save', will answer the new content
-        h << h.input(type='submit', value='Save').action(lambda: comp.answer(content()))
+        h << h.input(type='submit', value='Save').action(self.answer, comp, content)
         h << ' '
         # Clicking on 'Cancel', will answer ``None``
         h << h.input(type='submit', value='Cancel').action(comp.answer)

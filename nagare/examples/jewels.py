@@ -113,7 +113,7 @@ def render(self, h, comp, *args):
                         with h.td(class_='cell%d' % ((i + j) % 2)):
                             if jewel:
                                 # Clicking on a cell with a jewel answers the tuple (i, j)
-                                with h.a.action(lambda i=i + 1, j=j + 1: comp.answer((i, j))):
+                                with h.a.action(comp.answer, (i, j)):
                                     h << h.img(src='jewel%d.gif' % jewel)
 
     return h.root
@@ -139,10 +139,10 @@ class Jewels(component.Task):
 
         while not board.is_finish():
             # Wait for a click in a cell
-            played = comp.call(component.Component(board))
+            (x, y) = comp.call(component.Component(board))
 
             # Play it
-            board.played(*played)
+            board.played(x + 1, y + 1)
 
         comp.call(util.Confirm('No movements left, you scored %s.' % board.score))
 

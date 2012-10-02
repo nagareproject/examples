@@ -49,6 +49,19 @@ class Gallery(object):
     def __init__(self, name):
         """A gallery has a name"""
         self.name = name
+        self.photos = []
+
+    def get_photos(self):
+        """Use the database relation to get all the photos of this gallery
+
+        Return:
+           ``Photo()`` components
+        """
+        photos = GalleryData.get_by(name=self.name).photos
+
+        # Create a Photo object with the id of the photo then make it a component
+        self.photos = [component.Component(Photo(p.id)) for p in photos]
+        return self.photos
 
 
 @presentation.render_for(Gallery)
@@ -60,15 +73,8 @@ def render(self, h, *args):
         h << h.br
 
         with h.ul:
-            # Use the database relation to get all the photos of this
-            # gallery
-            for p in GalleryData.get_by(name=self.name).photos:
-                # Create a Photo object with the id of the photo
-                # then make it a component to display ir
-                photo = component.Component(Photo(p.id))
-
-                # Render the ``thumbnail`` view of the Photo component
-                h << h.li(photo.render(h, model='thumbnail'))
+            # Render the ``thumbnail`` view of the Photo component
+            h << h.li(photo.render(h, model='thumbnail') for photo in self.get_photos())
 
     return h.root
 

@@ -14,6 +14,7 @@ components in a portal-like container
 from __future__ import with_statement
 
 from nagare import component, presentation, ajax
+from nagare.continuation import has_continuation
 
 from nagare.examples.wiki import wiki9
 from nagare.examples.gallery import gallery7
@@ -29,11 +30,15 @@ class Portal(object):
         """Each components to display is simply an attribute"""
         self.calc = component.Component(calculator.Calculator())
         self.counter = component.Component(counter.Counter())
-        self.tictactoe = component.Component(tictactoe.Task())
-        self.wiki = component.Component(wiki9.app())
-        self.jewels = component.Component(Jewels(10, 10))
-        self.gallery = component.Component(gallery7.app())
         self.html = component.Component(html.Html())
+
+        if not has_continuation:
+            self.tictactoe = self.wiki = self.jewels = self.gallery = None
+        else:
+            self.tictactoe = component.Component(tictactoe.Task())
+            self.wiki = component.Component(wiki9.app())
+            self.jewels = component.Component(Jewels(10, 10))
+            self.gallery = component.Component(gallery7.app())
 
 
 @presentation.render_for(Portal)
@@ -61,75 +66,82 @@ def render(self, h, comp, *args):
                     h << h.p('You can drag and drop the components')
                     h << h.p('Follow the "Click for details" link to dive into the code')
 
-            with h.div(class_='portlet'):
-                h << h.div('HTML', class_='portlet_handle')
+            if self.html:
+                with h.div(class_='portlet'):
+                    h << h.div('HTML', class_='portlet_handle')
 
-                with h.div(class_='portlet_content'):
-                    h << h.div('Add any HTML content', class_='portlet_comment')
+                    with h.div(class_='portlet_content'):
+                        h << h.div('Add any HTML content', class_='portlet_comment')
 
-                    # Each portlet is rendered asynchronously
-                    h << h.div(self.html.render(h.AsyncRenderer()), class_='html')
+                        # Each portlet is rendered asynchronously
+                        h << h.div(self.html.render(h.AsyncRenderer()), class_='html')
 
-                    h << h.a('Click for details', class_='source_link').action(lambda: comp.answer((self.html, html)))
+                        h << h.a('Click for details', class_='source_link').action(comp.answer, (self.html, html.__name__))
 
-            with h.div(class_='portlet'):
-                h << h.div('Jewels', class_='portlet_handle')
+            if self.jewels:
+                with h.div(class_='portlet'):
+                    h << h.div('Jewels', class_='portlet_handle')
 
-                with h.div(class_='portlet_content'):
-                    h << h.div('Click on a group of 2 or more jewels of the same color to make it disappear', class_='portlet_comment')
+                    with h.div(class_='portlet_content'):
+                        h << h.div('Click on a group of 2 or more jewels of the same color to make it disappear', class_='portlet_comment')
 
-                    h.head.css_url('jewels.css')
-                    h << self.jewels.render(h.AsyncRenderer())
-
-            h << h.div(class_='drop_zone')
-
-        with h.div(class_='portlet_column'):
-            with h.div(class_='portlet'):
-                h << h.div('TicTacToe', class_='portlet_handle')
-
-                with h.div(class_='portlet_content'):
-                    h << h.div('Enter the 2 players names then play', class_='portlet_comment')
-                    h << self.tictactoe.render(h.AsyncRenderer())
-
-                    h << h.a('Click for details', class_='source_link').action(lambda: comp.answer((self.tictactoe, tictactoe)))
-
-            with h.div(class_='portlet'):
-                h << h.div('Counter', class_='portlet_handle')
-                with h.div(class_='portlet_content'):
-                    h << h.div(self.counter.render(h.AsyncRenderer()), class_='comp')
-
-                    h << h.a('Click for details', class_='source_link').action(lambda: comp.answer((self.counter, counter)))
-
-            with h.div(class_='portlet'):
-                h << h.div('Wiki', class_='portlet_handle')
-
-                with h.div(class_='portlet_content'):
-                    h << self.wiki.render(h.AsyncRenderer())
-
-                    h << h.a('Wiki tutorial', class_='source_link', href='http://www.nagare.org/wiki')
+                        h.head.css_url('jewels.css')
+                        h << self.jewels.render(h.AsyncRenderer())
 
             h << h.div(class_='drop_zone')
 
         with h.div(class_='portlet_column'):
-            with h.div(class_='portlet'):
-                h << h.div('RPN Calculator', class_='portlet_handle')
+            if self.tictactoe:
+                with h.div(class_='portlet'):
+                    h << h.div('TicTacToe', class_='portlet_handle')
 
-                with h.div(class_='portlet_content'):
-                    with h.div(class_='portlet_comment'):
-                        h << h.p('This is a RPN calculator')
-                        h << h.p(u'Try: 3 \N{WHITE RIGHT-POINTING POINTER} 4 \N{MULTIPLICATION X}')
+                    with h.div(class_='portlet_content'):
+                        h << h.div('Enter the 2 players names then play', class_='portlet_comment')
+                        h << self.tictactoe.render(h.AsyncRenderer())
 
-                    h << h.div(self.calc.render(h.AsyncRenderer()), class_='comp')
+                        h << h.a('Click for details', class_='source_link').action(comp.answer, (self.tictactoe, tictactoe.__name__))
 
-                    h << h.a('Click for details', class_='source_link').action(lambda: comp.answer((self.calc, calculator)))
+            if self.counter:
+                with h.div(class_='portlet'):
+                    h << h.div('Counter', class_='portlet_handle')
+                    with h.div(class_='portlet_content'):
+                        h << h.div(self.counter.render(h.AsyncRenderer()), class_='comp')
 
-            with h.div(class_='portlet'):
-                h << h.div('Photos gallery', class_='portlet_handle')
+                        h << h.a('Click for details', class_='source_link').action(comp.answer, (self.counter, counter.__name__))
 
-                with h.div(class_='portlet_content'):
-                    h << h.div('Upload pictures', class_='portlet_comment')
-                    h << self.gallery.render(h.AsyncRenderer())
-                    h << h.p(style='clear: both')
+            if self.wiki:
+                with h.div(class_='portlet'):
+                    h << h.div('Wiki', class_='portlet_handle')
+
+                    with h.div(class_='portlet_content'):
+                        h << self.wiki.render(h.AsyncRenderer())
+
+                        h << h.a('Wiki tutorial', class_='source_link', href='http://www.nagare.org/wiki')
+
+            h << h.div(class_='drop_zone')
+
+        with h.div(class_='portlet_column'):
+            if self.calc:
+                with h.div(class_='portlet'):
+                    h << h.div('RPN Calculator', class_='portlet_handle')
+
+                    with h.div(class_='portlet_content'):
+                        with h.div(class_='portlet_comment'):
+                            h << h.p('This is a RPN calculator')
+                            h << h.p(u'Try: 3 \N{WHITE RIGHT-POINTING POINTER} 4 \N{MULTIPLICATION X}')
+
+                        h << h.div(self.calc.render(h.AsyncRenderer()), class_='comp')
+
+                        h << h.a('Click for details', class_='source_link').action(comp.answer, (self.calc, calculator.__name__))
+
+            if self.gallery:
+                with h.div(class_='portlet'):
+                    h << h.div('Photos gallery', class_='portlet_handle')
+
+                    with h.div(class_='portlet_content'):
+                        h << h.div('Upload pictures', class_='portlet_comment')
+                        h << self.gallery.render(h.AsyncRenderer())
+                        h << h.p(style='clear: both')
 
             h << h.div(class_='drop_zone')
 
@@ -144,7 +156,14 @@ class App(object):
         self.portal = component.Component(Portal())
         self.source = component.Component(None)
 
-        self.portal.on_answer(lambda args: self.source.call(SourceViewer(*args)))
+        self.portal.on_answer(self.view_source)
+        self.source.on_answer(self.hide_source)
+
+    def view_source(self, (comp, module_name)):
+        self.source.becomes(SourceViewer(comp, __import__(module_name, fromlist=(True))))
+
+    def hide_source(self, _):
+        self.source.becomes(None)
 
 
 @presentation.render_for(App)

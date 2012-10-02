@@ -16,18 +16,22 @@ class Html:
     def __init__(self):
         self.content = ''
 
+    def edit(self, comp):
+        comp.becomes(HTMLEditor(self))
+        comp.on_answer(comp.becomes, self)
+
 @presentation.render_for(Html)
 def default_view(self, h, comp, *args):
     with h.div:
         if self.content:
             h << h.parse_htmlstring(self.content, fragment=True)
 
-        h << h.a('Edit HTML').action(lambda: comp.call(HTMLEditor(self)))
+        h << h.a('Edit HTML').action(self.edit, comp)
 
     return h.root
 
 
-def to_valid_html(value, msg="Not a valid html fragment"):
+def to_valid_html(value, msg='Not a valid html fragment'):
     try:
         return clean.Cleaner().clean_html(value)
     except:
@@ -50,7 +54,7 @@ def default_view(self, h, comp, *args):
     with h.form:
         h << h.label('HTML source code')
         h << h.textarea(self.content, rows=15, cols=30).action(self.content).error(self.content.error)
-        h << h.input(type='submit', value='Save').action(lambda: self.commit(comp))
+        h << h.input(type='submit', value='Save').action(self.commit, comp)
         h << ' '
         h << h.input(type='submit', value='Cancel').action(comp.answer)
 
@@ -59,45 +63,49 @@ def default_view(self, h, comp, *args):
 # -----------------------------------------------------------------------------
 
 hl_lines = (
-    range(12, 59),
+    range(12, 62),
     (
         (4,),
         '<p>A <code>Html</code> widget is defined</p>'
         '<p>Its default view displays its HTML content</p>',
-        range(4, 17)
+        range(4, 21)
     ),
 
     (
-        (14, 42),
-        '<p>Use of the <code>call()/answer()</code> mechanism: a <code>Html</code> widget '
-        'calls an <code>HTMLEditor</code></p>'
+        (18,),
+        '<p>When the <code>Edit HTML</code> link is clicked, the <code>edit</code> '
+        'method is called and the <code>Html</code> component is changed, by '
+        'a <code>becomes()</code>, to the <code>HTMLEditor</code> component</p>',
+        [9, 18]
+    ),
+
+    (
+        (39, 46),
         '<p>When the <code>Save</code> button is clicked, the <code>content</code> is changed, '
-        'the editor answers and the <code>Html</code> widget is rendered back</p>',
-        [14, 33, 34, 35, 42]
+        'the editor answers so the <code>Html</code> widget is rendered back</p>',
+        [10, 39, 46]
     ),
 
     (
-        (14, 44),
-        '<p>Use of the <code>call()/answer()</code> mechanism: a <code>Html</code> widget '
-        'calls an <code>HTMLEditor</code></p>'
-        '<p>When the <code>Cancel</code> button is clicked the editor answers and the '
-        '<code>Html</code> widget is rendered back',
-        [14, 44]
+        (48,),
+        '<p>When the <code>Cancel</code> button is clicked, '
+        'the editor answers so the <code>Html</code> widget is rendered back</p>',
+        [10, 48]
     ),
 
     (
-        (19, 31, 41),
+        (23, 35, 45),
         '<p><code>to_valid_html()</code> is a dedicated form field validator</p>'
         '<p>A validation method is associated to a Property object through its '
         '<code>validate()</code> method</p>',
-        range(19, 24)+[31, 41]
+        range(23, 28) + [35, 45]
     ),
 
     (
-        (26,),
+        (30,),
         '<p>Definition of a Nagare Editor</p>'
         '<p>Its default view is a form</p>'
         '<p><code>target</code> parameter is the edited <code>Html</code> widget</p>',
-        range(26, 47)
+        range(30, 51)
     )
 )

@@ -62,32 +62,32 @@ def render(self, h, *args):
             with h.tr:
                 h << h.td(colspan=3)
                 h << h.td(h.a('C').action(self.drop))
-                h << h.td(h.a(u'\N{DIVISION SIGN}').action(lambda: self.operand(operator.div)))
+                h << h.td(h.a(u'\N{DIVISION SIGN}').action(self.operand, operator.div))
 
             with h.tr:
-                h << h.td(h.a(7).action(lambda: self.digit(7)))
-                h << h.td(h.a(8).action(lambda: self.digit(8)))
-                h << h.td(h.a(9).action(lambda: self.digit(9)))
+                h << h.td(h.a(7).action(self.digit, 7))
+                h << h.td(h.a(8).action(self.digit, 8))
+                h << h.td(h.a(9).action(self.digit, 9))
                 h << h.td
-                h << h.td(h.a(u'\N{MULTIPLICATION X}').action(lambda: self.operand(operator.mul)))
+                h << h.td(h.a(u'\N{MULTIPLICATION X}').action(self.operand, operator.mul))
 
             with h.tr:
-                h << h.td(h.a(4).action(lambda: self.digit(4)))
-                h << h.td(h.a(5).action(lambda: self.digit(5)))
-                h << h.td(h.a(6).action(lambda: self.digit(6)))
+                h << h.td(h.a(4).action(self.digit, 4))
+                h << h.td(h.a(5).action(self.digit, 5))
+                h << h.td(h.a(6).action(self.digit, 6))
                 h << h.td
-                h << h.td(h.a(u'\N{MINUS SIGN}').action(lambda: self.operand(operator.sub)))
+                h << h.td(h.a(u'\N{MINUS SIGN}').action(self.operand, operator.sub))
 
             with h.tr:
-                h << h.td(h.a(1).action(lambda: self.digit(1)))
-                h << h.td(h.a(2).action(lambda: self.digit(2)))
-                h << h.td(h.a(3).action(lambda: self.digit(3)))
+                h << h.td(h.a(1).action(self.digit, 1))
+                h << h.td(h.a(2).action(self.digit, 2))
+                h << h.td(h.a(3).action(self.digit, 3))
                 h << h.td
-                h << h.td(h.a(u'\N{PLUS SIGN}').action(lambda: self.operand(operator.add)))
+                h << h.td(h.a(u'\N{PLUS SIGN}').action(self.operand, operator.add))
 
             with h.tr:
                 h << h.td
-                h << h.td(h.a(0).action(lambda: self.digit(0)))
+                h << h.td(h.a(0).action(self.digit, 0))
                 h << h.td(colspan=2)
                 h << h.td(h.a(u'\N{WHITE RIGHT-POINTING POINTER}').action(self.enter))
 
@@ -122,13 +122,13 @@ hl_lines = (
 
     (
         (54, 61, 68, 75),
-        'Use of anonymous functions to call the <code>operand</code> method',
+        'Association of the <code>operand</code> method to links, with a parameter',
         (54, 61, 68, 75)
     ),
 
     (
         (57, 58, 59, 64, 65, 66, 71, 72, 73, 79),
-        'Use of anonymous functions to call the <code>digit</code> method',
+        'Association of the <code>digit</code> method to links, with a parameter',
         (57, 58, 59, 64, 65, 66, 71, 72, 73, 79)
     ),
 

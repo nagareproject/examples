@@ -21,6 +21,6 @@ examples = (
            )
 
 # TRAC url to display a module code from the SVN repository
-SVN_EXAMPLES_URL = 'http://www.nagare.org/trac/browser/trunk/nagare/examples/nagare/examples/gallery/%s.py'
+SVN_EXAMPLES_URL = 'http://www.nagare.org/trac/browser/examples/nagare/examples/gallery/%s.py'
 
 app = lambda: Examples('Gallery tutorial', SVN_EXAMPLES_URL, examples)

@@ -40,7 +40,7 @@ def render(self, h, comp, *args):
     with h.ul(class_='menu'):
         for (i, (label, href)) in enumerate(self.labels):
             # When clicked, an entry answers with its index
-            a = h.a(label, href=href).action(lambda i=i: comp.answer(i))
+            a = h.a(label, href=href).action(comp.answer, i)
             if i == self._selected:
                 a(class_='selected')
 
@@ -198,7 +198,10 @@ def module_name(name):
 modules = (counter, calculator, color, tictactoe, number, form)
 
 # Create the examples list
-examples = [(module_name(module.__name__), zip(module.examples[::2], module.examples[1::2])) for module in modules]
+examples = []
+for module in modules:
+    if module.examples:
+        examples.append((module_name(module.__name__), zip(module.examples[::2], module.examples[1::2])))
 
 # TRAC url to display a module code from the Mercurial repository
 HG_EXAMPLES_URL = 'http://www.nagare.org/trac/browser/examples/nagare/examples/%s.py'

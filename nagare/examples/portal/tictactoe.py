@@ -14,7 +14,7 @@ from nagare import component, presentation, util
 
 class TicTacToe:
     def __init__(self):
-        self._board = [0]*9
+        self._board = [0] * 9
 
     def played(self, player, played):
         self._board[played] = player
@@ -41,9 +41,9 @@ def render(self, h, comp, *args):
                 for x in row:
                     with h.td:
                         if x == 0:
-                            h << h.a('-').action(lambda i=i: comp.answer(i))
+                            h << h.a('-').action(comp.answer, i)
                         else:
-                            h << ('X' if x==1 else 'O')
+                            h << ('X' if x == 1 else 'O')
 
                         i += 1
     return h.root
@@ -58,13 +58,13 @@ class Task(component.Task):
 
             player = 1
             while not board.is_won() and not board.is_ended():
-                player = (player+1) & 1
+                player = (player + 1) & 1
 
                 played = comp.call(component.Component(board))
-                board.played(player+1, played)
+                board.played(player + 1, played)
 
             if board.is_won():
-                msg =  'Player %s WON !' %  players[player]
+                msg = 'Player %s WON !' % players[player]
             else:
                 msg = 'Nobody WON !'
 

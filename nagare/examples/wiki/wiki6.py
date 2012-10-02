@@ -47,22 +47,25 @@ def render(self, h, comp, *args):
 
     for node in html.getiterator():
         if node.tag == 'wiki':
-            a = h.a(node.text).action(lambda title=unicode(node.text): comp.answer(title))
+            a = h.a(node.text).action(comp.answer, unicode(node.text))
             node.replace(a)
 
-    return (html, h.a('Edit this page').action(lambda: self.edit(comp)))
+    return (html, h.a('Edit this page').action(self.edit, comp))
 
 
 @presentation.render_for(Page, model='meta')
 def render(self, h, comp, *args):
     return ('Viewing ', h.b(self.title), h.br, h.br,
-            'You can return to the ', h.a('FrontPage').action(lambda: comp.answer(u'FrontPage')))
+            'You can return to the ', h.a('FrontPage').action(comp.answer, u'FrontPage'))
 
 # ---------------------------------------------------------------------------
 
 class PageEditor(object):
     def __init__(self, page):
         self.page = page
+
+    def answer(self, comp, text):
+        comp.answer(text())
 
 
 @presentation.render_for(PageEditor)
@@ -75,7 +78,7 @@ def render(self, h, comp, *args):
         with h.textarea(rows='10', cols='40').action(content):
             h << page.data
         h << h.br
-        h << h.input(type='submit', value='Save').action(lambda: comp.answer(content()))
+        h << h.input(type='submit', value='Save').action(self.answer, comp, content)
         h << ' '
         h << h.input(type='submit', value='Cancel').action(comp.answer)
 
@@ -98,9 +101,21 @@ class Wiki(object):
     def goto(self, title):
         page = PageData.get_by(pagename=title)
         if page is None:
-            PageData(pagename=title, data='')
+            PageData(pagename=title, data=u'')
 
         self.content.becomes(Page(title))
+
+    def select_a_page(self, comp):
+        """Let the user select a new page to display
+
+        In:
+          - ``comp`` -- the component wrapping ``self``
+        """
+        # 1. display the Wiki with its 'all' view
+        new_page = comp.call(model='all')
+
+        # 2. go to the page which title in answered
+        self.goto(new_page)
 
 
 @presentation.render_for(Wiki)
@@ -118,7 +133,7 @@ def render(self, h, comp, *args):
     # Link added with an action to:
     #   1. display the Wiki with its 'all' view
     #   2. go to the page which title in answered
-    h << 'View the ' << h.a('complete list of pages').action(lambda: self.goto(comp.call(self, model='all')))
+    h << 'View the ' << h.a('complete list of pages').action(self.select_a_page, comp)
 
     return h.root
 
@@ -134,7 +149,7 @@ def render(self, h, comp, *args):
         for page in PageData.query.order_by(PageData.pagename):
             with h.li:
                 # The action answer the title of the page where we want to go
-                h << h.a(page.pagename).action(lambda title=page.pagename: comp.answer(title))
+                h << h.a(page.pagename).action(comp.answer, page.pagename)
 
     return h.root
 

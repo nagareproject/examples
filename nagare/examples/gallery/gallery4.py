@@ -43,7 +43,7 @@ def render(self, h, comp, *args):
     with h.div:
         h << h.img(width='200').action(self.thumbnail)
         h << h.br
-        h << h.a(self.title).action(lambda: comp.answer(self))
+        h << h.a(self.title).action(comp.answer, self)
         h << h.i(' (%d octets)' % len(self.img()))
 
     return h.root
@@ -83,7 +83,7 @@ def render(self, h, comp, *args):
                 with h.td:
                     # The action on the "Add" button is to call ``self.commit``, i.e
                     # answer the tuple (title of the photo, image data)
-                    h << h.input(type='submit', value='Add').action(lambda: self.commit(comp))
+                    h << h.input(type='submit', value='Add').action(self.commit, comp)
 
                     h << ' '
 
@@ -98,6 +98,19 @@ def render(self, h, comp, *args):
 class Gallery(object):
     def __init__(self, name):
         self.name = name
+        self.photos = []
+
+    def get_photos(self):
+        """Use the database relation to get all the photos of this gallery
+
+        Return:
+           ``Photo()`` components
+        """
+        photos = GalleryData.get_by(name=self.name).photos
+
+        # Create a Photo object with the id of the photo then make it a component
+        self.photos = [component.Component(Photo(p.id)) for p in photos]
+        return self.photos
 
     def add_photo(self, comp):
         """This method temporary replaces the Gallery component by a PhotoCreator
@@ -123,13 +136,12 @@ def render(self, h, comp, *args):
         h << h.h1('Gallery: ', self.name)
 
         # In the default Gallery view, add a link to add a new photo
-        h << h.a('Add photo').action(lambda: self.add_photo(comp))
+        h << h.a('Add photo').action(self.add_photo, comp)
 
         h << h.br
 
         with h.ul:
-            for p in GalleryData.get_by(name=self.name).photos:
-                photo = component.Component(Photo(p.id))
+            for photo in self.get_photos():
                 photo.on_answer(comp.call)
 
                 h << h.li(photo.render(h, model='thumbnail'))

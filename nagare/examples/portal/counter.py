@@ -32,7 +32,7 @@ def render(self, h, comp, *args):
             h << h.a(u'\N{MINUS SIGN}', title='decrease').action(self.decrease)
 
         with h.span:
-            h << h.a('=', title='freeze').action(lambda: comp.becomes(self, model='freezed'))
+            h << h.a('=', title='freeze').action(comp.becomes, self, model='freezed')
 
         with h.span:
             h << h.a(u'\N{PLUS SIGN}', title='increase').action(self.increase)
@@ -87,8 +87,7 @@ hl_lines = (
 
     (
         (24,),
-        '<p>Explicitly association of an anonymous function to  a link</p>'
-        '<p>After a click an the link, the component will be rendered with its '
+        '<p>After a click on the link, the component will be rendered with its '
         '<code>freezed</code> view: the <code>becomes()</code> method of the '
         'component is used to change it by the same object but with a different '
         'view</p>',

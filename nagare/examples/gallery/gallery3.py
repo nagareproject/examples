@@ -51,7 +51,7 @@ def render(self, h, comp, *args):
         h << h.br
 
         # On a click on its title, the Photo object answers itself
-        h << h.a(self.title).action(lambda: comp.answer(self))
+        h << h.a(self.title).action(comp.answer, self)
         h << h.i(' (%d octets)' % len(self.img()))
 
     return h.root
@@ -60,6 +60,19 @@ def render(self, h, comp, *args):
 class Gallery(object):
     def __init__(self, name):
         self.name = name
+        self.photos = []
+
+    def get_photos(self):
+        """Use the database relation to get all the photos of this gallery
+
+        Return:
+           ``Photo()`` components
+        """
+        photos = GalleryData.get_by(name=self.name).photos
+
+        # Create a Photo object with the id of the photo then make it a component
+        self.photos = [component.Component(Photo(p.id)) for p in photos]
+        return self.photos
 
 
 @presentation.render_for(Gallery)
@@ -69,9 +82,7 @@ def render(self, h, comp, *args):
         h << h.br
 
         with h.ul:
-            for p in GalleryData.get_by(name=self.name).photos:
-                photo = component.Component(Photo(p.id))
-
+            for photo in self.get_photos():
                 # On a click on the title of a Photo, the Gallery temporary
                 # changes itself by this Photo, displayed in its default view
                 photo.on_answer(comp.call)
