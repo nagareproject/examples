@@ -160,7 +160,7 @@ class App(object):
         self.source.on_answer(self.hide_source)
 
     def view_source(self, (comp, module_name)):
-        self.source.becomes(SourceViewer(comp, __import__(module_name, fromlist=(True))))
+        self.source.becomes(SourceViewer(comp, __import__(module_name, fromlist=(True,))))
 
     def hide_source(self, _):
         self.source.becomes(None)
