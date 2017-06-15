@@ -20,7 +20,7 @@ examples = (
             ('gallery7', ((gallery7.__doc__, gallery7.app),)),
            )
 
-# TRAC url to display a module code from the SVN repository
-SVN_EXAMPLES_URL = 'http://www.nagare.org/trac/browser/examples/nagare/examples/gallery/%s.py'
+# Url to display a module code from the GitHub repository
+EXAMPLES_URL = 'https://github.com/nagareproject/examples/blob/master/nagare/examples/%s.py'
 
-app = lambda: Examples('Gallery tutorial', SVN_EXAMPLES_URL, examples)
+app = lambda: Examples('Gallery tutorial', EXAMPLES_URL, examples)
