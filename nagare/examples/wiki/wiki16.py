@@ -1,11 +1,11 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
+# --
 
 """More complex security rules: only the author can change a page content
 
@@ -14,9 +14,6 @@
 can edit it
 Then try as the administrator 'admin / admin' that can edit all the pages
 """
-
-from __future__ import with_statement
-
 import re
 import docutils.core
 
@@ -24,9 +21,10 @@ from nagare import component, presentation, var, continuation, security, wsgi, l
 
 from wikidata import PageData
 
+
 # ---------------------------------------------------------------------------
 
-class Login:
+class Login(object):
     def logout(self):
         security.get_manager().logout()
 
@@ -37,17 +35,18 @@ def render(self, h, binding, *args):
 
     if not user:
         html = h.form(
-                      'Login: ', h.input(name='__ac_name'), ' ',
-                      'Password: ', h.input(type='password', name='__ac_password'), ' ',
-                      h.input(type='submit', value='ok')
-                     )
+            'Login: ', h.input(name='__ac_name'), ' ',
+            'Password: ', h.input(type='password', name='__ac_password'), ' ',
+            h.input(type='submit', value='ok')
+        )
     else:
         html = (
-                'Welcome ', h.b(user.id), h.br,
-                h.a('logout').action(self.logout)
-               )
+            'Welcome ', h.b(user.id), h.br,
+            h.a('logout').action(self.logout)
+        )
 
     return html
+
 
 # ---------------------------------------------------------------------------
 
@@ -108,6 +107,7 @@ def render(self, h, comp, *args):
 
     return h.root
 
+
 # ---------------------------------------------------------------------------
 
 class PageEditor(object):
@@ -138,6 +138,7 @@ def render(self, h, comp, *args):
 @presentation.render_for(PageEditor, model='meta')
 def render(self, h, *args):
     return ('Editing ', h.b(self.page.title))
+
 
 # ---------------------------------------------------------------------------
 
@@ -194,6 +195,7 @@ def render(self, h, comp, *args):
 
     return h.root
 
+
 # ---------------------------------------------------------------------------
 
 @presentation.init_for(Wiki, "(len(url) == 2) and (url[0] == 'page')")
@@ -210,6 +212,7 @@ def init(self, url, *args):
 @presentation.init_for(Wiki, "len(url) and (url[0] == 'all')")
 def init(self, url, comp, *args):
     continuation.Continuation(self.select_a_page, comp)
+
 
 # ---------------------------------------------------------------------------
 
@@ -229,8 +232,10 @@ class User(common.User):
     def has_permission(self, permission):
         return permission in self.roles
 
+
 editor_role = ('wiki.editor',)
 admin_role = ('wiki.admin', editor_role)
+
 
 from nagare.security import form_auth
 
@@ -278,11 +283,13 @@ class Rules(common.Rules):
 class SecurityManager(Authentication, Rules):
     pass
 
+
 # ---------------------------------------------------------------------------
 
 class WSGIApp(wsgi.WSGIApp):
     def __init__(self, app_factory):
         super(WSGIApp, self).__init__(app_factory)
         self.security = SecurityManager()
+
 
 app = WSGIApp(lambda: component.Component(Wiki()))

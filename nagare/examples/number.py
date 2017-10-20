@@ -1,11 +1,11 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
+# --
 
 import random
 
@@ -15,6 +15,7 @@ from nagare.continuation import has_continuation
 # ---------------------------------------------------------------------------
 
 examples = ()
+
 
 class Number(component.Task):
     """A little game to guess a number
@@ -52,6 +53,7 @@ class Number(component.Task):
 
             self.attempt += 1
 
+
 # ---------------------------------------------------------------------------
 
 # This example shows that, by default, the objects are statefull
@@ -62,8 +64,10 @@ def example1():
 Now use the 'back' button to cheat : go back to the first attempt and enter the correct number''')
     return number
 
+
 if has_continuation:
     examples = ('A statefull component', example1)
+
 
 # ---------------------------------------------------------------------------
 
@@ -77,6 +81,7 @@ Now use the 'back' button to cheat : you CAN'T''')
     number = state.stateless(number)
 
     return number
+
 
 if has_continuation:
     examples += ('A stateless component', example2)

@@ -1,18 +1,15 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
+# --
 
 """Adding a second view to the Wiki component to display the index of
 all the pages
 """
-
-from __future__ import with_statement
-
 import re
 import docutils.core
 
@@ -58,6 +55,7 @@ def render(self, h, comp, *args):
     return ('Viewing ', h.b(self.title), h.br, h.br,
             'You can return to the ', h.a('FrontPage').action(comp.answer, u'FrontPage'))
 
+
 # ---------------------------------------------------------------------------
 
 class PageEditor(object):
@@ -88,6 +86,7 @@ def render(self, h, comp, *args):
 @presentation.render_for(PageEditor, model='meta')
 def render(self, h, *args):
     return ('Editing ', h.b(self.page.title))
+
 
 # ---------------------------------------------------------------------------
 
@@ -152,6 +151,7 @@ def render(self, h, comp, *args):
                 h << h.a(page.pagename).action(comp.answer, page.pagename)
 
     return h.root
+
 
 # ---------------------------------------------------------------------------
 

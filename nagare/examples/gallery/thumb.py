@@ -1,11 +1,11 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
+# --
 
 try:
     from PIL import Image, ImageFilter, ImageDraw
@@ -17,8 +17,11 @@ except ImportError:
 import StringIO
 
 
-def dropShadow(image, offset=(5, 5), background=0xffffff, shadow=0x444444,
-                border=8, iterations=3):
+def dropShadow(
+    image, offset=(5, 5),
+    background=0xffffff, shadow=0x444444, border=8,
+    iterations=3
+):
     """
     Add a gaussian blur drop shadow to an image.
 
@@ -70,7 +73,7 @@ def outline(image, border=5, color=0x000000):
 
     draw = ImageDraw.Draw(back)
     draw.rectangle((0, 0, w + border * 2 - 1, h + border * 2 - 1), outline=color)
-    #w+border*2, h+border*2))
+    # w+border*2, h+border*2))
 
     return back
 
@@ -89,6 +92,7 @@ def thumbnail(image):
     thumb.save(i, format)
     return i.getvalue()
 
+
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
@@ -98,4 +102,4 @@ if __name__ == "__main__":
     image.thumbnail((200, 200), Image.ANTIALIAS)
 
     dropShadow(outline(image, border=8, color=0x666666), shadow=0x666666).show()
-    #dropShadow(image, background=0xeeeeee, shadow=0x444444, offset=(0,5)).show()
+    # dropShadow(image, background=0xeeeeee, shadow=0x444444, offset=(0,5)).show()

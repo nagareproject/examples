@@ -1,19 +1,17 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
+# --
 
 """Form, to append a new photo to a gallery, added"""
-
-from __future__ import with_statement
-
 from nagare import presentation, component, editor
 
-from gallerydata import *
+from gallerydata import PhotoData, GalleryData
+
 
 # ---------------------------------------------------------------------------
 
@@ -93,6 +91,7 @@ def render(self, h, comp, *args):
 
     return h.root
 
+
 # ---------------------------------------------------------------------------
 
 class Gallery(object):
@@ -148,6 +147,8 @@ def render(self, h, comp, *args):
 
     return h.root
 
+
 # ---------------------------------------------------------------------------
 
-app = lambda: Gallery(u'MyGallery')
+def app():
+    return Gallery(u'MyGallery')

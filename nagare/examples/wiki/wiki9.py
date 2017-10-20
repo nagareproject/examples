@@ -1,18 +1,15 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
+# --
 
 """Step #3 to add significative URLs : the URL '.../all' displays the index
 of all the pages
 """
-
-from __future__ import with_statement
-
 import re
 import docutils.core
 
@@ -58,6 +55,7 @@ def render(self, h, comp, *args):
     return ('Viewing ', h.b(self.title), h.br, h.br,
             'You can return to the ', h.a('FrontPage', href='page/FrontPage').action(comp.answer, u'FrontPage'))
 
+
 # ---------------------------------------------------------------------------
 
 class PageEditor(object):
@@ -88,6 +86,7 @@ def render(self, h, comp, *args):
 @presentation.render_for(PageEditor, model='meta')
 def render(self, h, *args):
     return ('Editing ', h.b(self.page.title))
+
 
 # ---------------------------------------------------------------------------
 
@@ -136,11 +135,12 @@ def render(self, h, comp, *args):
 
     return h.root
 
+
 # ---------------------------------------------------------------------------
 
 @presentation.init_for(Wiki, "(len(url) == 2) and (url[0] == 'page')")
 def init(self, url, *args):
-    title = url[1] # Retrieve the page title
+    title = url[1]  # Retrieve the page title
 
     page = PageData.get_by(pagename=title)
     if page is None:
@@ -148,8 +148,8 @@ def init(self, url, *args):
 
     self.goto(title)
 
-# Generic method to manage the '.../all' URL
 
+# Generic method to manage the '.../all' URL
 @presentation.init_for(Wiki, "len(url) and (url[0] == 'all')")
 def init(self, url, comp, *args):
     # We do exactly the same action than when a user clicks on the 'complete
@@ -158,6 +158,7 @@ def init(self, url, comp, *args):
     # As the ``select_a_page()`` is doing a `comp.call()` call, we need to wrap it
     # into a `continuation.Continuation()` context.
     continuation.Continuation(self.select_a_page, comp)
+
 
 # ---------------------------------------------------------------------------
 

@@ -1,15 +1,14 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
-
-from __future__ import with_statement
+# --
 
 from nagare import presentation, component, comet, var, ajax
+
 
 # -----------------------------------------------------------------------------
 
@@ -34,6 +33,7 @@ def append_msg(msg):
         msgs.appendChild(li)
     else:
         msgs.insertBefore(li, msgs.firstChild)
+
 
 # -----------------------------------------------------------------------------
 
@@ -78,6 +78,7 @@ def render(self, h, comp, *args):
                 h << h.input(type='submit', value='Send').action(comp.answer, ('send', self.user, msg))
 
     return h.root
+
 
 # -----------------------------------------------------------------------------
 
@@ -161,6 +162,7 @@ def render(self, h, *args):
         h << h.ul(id='msgs')
 
     return h.root
+
 
 # -----------------------------------------------------------------------------
 

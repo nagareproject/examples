@@ -1,23 +1,21 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
+# --
 
 """Basic examples of components, multiple views and synchronous/asynchronous
 callbacks
 """
 
-from __future__ import with_statement
-
 from nagare import component, presentation
-from nagare import partial
 from nagare.continuation import has_continuation
 
 examples = ()
+
 
 # ---------------------------------------------------------------------
 
@@ -74,7 +72,6 @@ def render(self, h, *args):
 
     In:
       - ``h`` -- the renderer
-      - ``comp`` -- the component
 
     Return:
       - the view of the referenced object
@@ -94,6 +91,7 @@ def render(self, h, *args):
             h << h.a(u'\N{PLUS SIGN}', class_='disabled')
 
     return h.root
+
 
 examples += ('Multiple views and methods callbacks', Counter1)
 
@@ -122,6 +120,7 @@ def render(self, h, comp, *args):
            )
 '''
 
+
 # ---------------------------------------------------------------------------
 
 # This example:
@@ -130,6 +129,7 @@ def render(self, h, comp, *args):
 # - shows how to associate lambda actions to HTML elements
 
 from nagare.var import Var
+
 
 class Counter2(Counter1):
     """The value is kept into a functional variable. Easier to work with,
@@ -170,6 +170,7 @@ def render(self, h, comp, *args):
 if has_continuation:
     examples += ('Multiple views and lambdas callbacks', Counter2)
 
+
 # ---------------------------------------------------------------------
 
 # This example:
@@ -209,7 +210,9 @@ def render(self, h, *args):
 
     return h.root
 
+
 examples += ('Automatic use of asynchronous requests/updates', App)
+
 
 # ---------------------------------------------------------------------
 
@@ -219,6 +222,7 @@ examples += ('Automatic use of asynchronous requests/updates', App)
 #   element asynchronously (using its id)
 
 from nagare import ajax
+
 
 class Counter4(object):
     def __init__(self, start=0):
@@ -251,6 +255,7 @@ def render(self, h, *args):
             h << h.a(u'\N{PLUS SIGN}', title='increase').action(ajax.Update(self.generate_response, self.increase, 'value'))
 
     return h.root
+
 
 examples += ('Asynchronous update of a HTML element', Counter4)
 
@@ -288,6 +293,7 @@ def render(self, h, *args):
            )
 """
 
+
 @presentation.render_for(Counter4, model='without_id')
 def render(self, h, *args):
     h.head.css_url('counter.css')
@@ -317,5 +323,6 @@ class App2(object):
 @presentation.render_for(App2)
 def render(self, h, *args):
     return self.counter.render(h)
+
 
 examples += ('Asynchronous update of a HTML element', App2)

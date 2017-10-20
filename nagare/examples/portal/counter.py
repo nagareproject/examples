@@ -1,17 +1,16 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
+# --
 
-from __future__ import with_statement
+from nagare import presentation
 
-from nagare import component, presentation
 
-class Counter:
+class Counter(object):
     def __init__(self, start=0):
         self.v = start
 
@@ -20,6 +19,7 @@ class Counter:
 
     def decrease(self):
         self.v -= 1
+
 
 @presentation.render_for(Counter)
 def render(self, h, comp, *args):
@@ -32,12 +32,13 @@ def render(self, h, comp, *args):
             h << h.a(u'\N{MINUS SIGN}', title='decrease').action(self.decrease)
 
         with h.span:
-            h << h.a('=', title='freeze').action(comp.becomes, self, model='freezed')
+            h << h.a('=', title='freeze').action(comp.becomes, model='freezed')
 
         with h.span:
             h << h.a(u'\N{PLUS SIGN}', title='increase').action(self.increase)
 
     return h.root
+
 
 @presentation.render_for(Counter, model='freezed')
 def render(self, h, *args):
@@ -57,10 +58,11 @@ def render(self, h, *args):
 
     return h.root
 
+
 # -----------------------------------------------------------------------------
 
 hl_lines = (
-    range(12, 60),
+    range(13, 60),
     (
         (13,),
         '<p>Default view for a <code>Counter</code> component</p>'
@@ -70,28 +72,28 @@ hl_lines = (
         '<li><code>h</code>: a HTML renderer</li>'
         '<li><code>comp</code>: the component wrapping the '
         '<code>Counter</code> object</li></ol>',
-        range(13, 30)
+        range(13, 29)
     ),
 
     (
-        (21,),
+        (20,),
         'Direct association of the <code>decrease</code> method to a link',
-        (21,)
+        (20,)
     ),
 
     (
-        (27,),
+        (26,),
         'Direct association of the <code>increase</code> method to a link',
-        (27,)
+        (26,)
     ),
 
     (
-        (24,),
+        (23,),
         '<p>After a click on the link, the component will be rendered with its '
         '<code>freezed</code> view: the <code>becomes()</code> method of the '
         'component is used to change it by the same object but with a different '
         'view</p>',
-        (24,)
+        (23,)
     ),
 
     (

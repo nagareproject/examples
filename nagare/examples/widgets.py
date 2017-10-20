@@ -1,33 +1,30 @@
 # -*- coding: iso-8859-1 -*-
 
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
-
+# --
 
 """Examples of same reusable widgets"""
-
-from __future__ import with_statement
-
 from nagare import component, presentation, var, partial
 
 # -----------------------------------------------------------------------------------------
 
 import datetime
 
+
 class Date(object):
     """A date widget to include into a ``<form>``
     """
     months = (
-                'january', 'february', 'mars', 'april',
-                'may', 'june', 'july', 'august',
-                'september', 'october', 'november', 'december'
-             )
+        'january', 'february', 'mars', 'april',
+        'may', 'june', 'july', 'august',
+        'september', 'october', 'november', 'december'
+    )
 
     def __init__(self, date):
         """Initialization
@@ -83,12 +80,13 @@ def render(self, h, *args):
     current_year = datetime.date.today().year
 
     return (
-            h.select([h.option('%02d' % i, value=str(i)).selected(self.day()) for i in range(1, 32)]).action(self.day),
+        h.select([h.option('%02d' % i, value=str(i)).selected(self.day()) for i in range(1, 32)]).action(self.day),
 
-            h.select([h.option(name, value=str(i + 1)).selected(self.month()) for (i, name) in enumerate(Date.months)]).action(self.month),
+        h.select([h.option(name, value=str(i + 1)).selected(self.month()) for (i, name) in enumerate(Date.months)]).action(self.month),
 
-            h.select([h.option(i, value=str(i)).selected(self.year()) for i in range(current_year, current_year + 5)]).action(self.year)
-           )
+        h.select([h.option(i, value=str(i)).selected(self.year()) for i in range(current_year, current_year + 5)]).action(self.year)
+    )
+
 
 # ---------------------------------------------------------------------------
 
@@ -171,6 +169,7 @@ def render(self, h, comp, *args):
 
     return h.root
 
+
 # ---------------------------------------------------------------------------
 
 class BatchedTable(object):
@@ -208,18 +207,19 @@ class BatchedTable(object):
 def render(self, h, *args):
     # Dynamically create a ``Table`` component, with the subset of the data
     table = Table(
-               self.rows[self.offset:self.offset + self.size],
-               self.headers, (),
-               self.colors
-               )
+        self.rows[self.offset:self.offset + self.size],
+        self.headers, (),
+        self.colors
+    )
 
     # Display the table and the actions
     return (
-            component.Component(table),
-            h.a('<previous').action(self.add_to_offset, -self.size),
-            ' | ',
-            h.a('next>').action(self.add_to_offset, self.size)
-           )
+        component.Component(table),
+        h.a('<previous').action(self.add_to_offset, -self.size),
+        ' | ',
+        h.a('next>').action(self.add_to_offset, self.size)
+    )
+
 
 # ---------------------------------------------------------------------------
 

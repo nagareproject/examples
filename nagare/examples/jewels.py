@@ -1,14 +1,11 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
-
-from __future__ import with_statement
-
+# --
 import random
 
 from nagare import component, presentation, util
@@ -101,6 +98,7 @@ class Board(object):
 
         self.collapse()
 
+
 @presentation.render_for(Board)
 def render(self, h, comp, *args):
     with h.div(class_='jewels'):
@@ -117,6 +115,7 @@ def render(self, h, comp, *args):
                                     h << h.img(src='jewel%d.gif' % jewel)
 
     return h.root
+
 
 # -----------------------------------------------------------------------------
 
@@ -146,6 +145,7 @@ class Jewels(component.Task):
 
         comp.call(util.Confirm('No movements left, you scored %s.' % board.score))
 
+
 # -----------------------------------------------------------------------------
 
 class App(object):
@@ -174,6 +174,7 @@ def render(self, h, *args):
         h << self.jewels
 
     return h.root
+
 
 # -----------------------------------------------------------------------------
 

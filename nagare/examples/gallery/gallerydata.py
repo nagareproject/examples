@@ -1,13 +1,13 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
+# --
 
-from elixir import *
+from elixir import Entity, Field, Unicode, BLOB, belongs_to, has_many
 from sqlalchemy import MetaData
 
 __metadata__ = MetaData()
@@ -25,6 +25,7 @@ class GalleryData(Entity):
     name = Field(Unicode(40))
 
     has_many('photos', of_kind='PhotoData')
+
 
 # ---------------------------------------------------------------------------
 

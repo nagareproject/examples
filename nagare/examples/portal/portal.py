@@ -1,17 +1,15 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
+# --
 
 """Example to demonstrate the use of asynchronous rendering of
 components in a portal-like container
 """
-
-from __future__ import with_statement
 
 from nagare import component, presentation, ajax
 from nagare.continuation import has_continuation
@@ -186,6 +184,7 @@ def render(self, h, comp, *args):
                 h << h.div(self.portal, id='main')
 
     return h.root
+
 
 # ---------------------------------------------------------------------------
 

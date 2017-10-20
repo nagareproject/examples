@@ -1,18 +1,15 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
+# --
 
 """Adding a second view to the Page and PageEditor component, displaying
 meta data about the current page and action.
 """
-
-from __future__ import with_statement
-
 import re
 import docutils.core
 
@@ -20,9 +17,11 @@ from nagare import component, presentation, var
 
 from wikidata import PageData
 
+
 # ---------------------------------------------------------------------------
 
 wikiwords = re.compile(r'\b([A-Z]\w+[A-Z]+\w+)')
+
 
 class Page(object):
     def __init__(self, title):
@@ -65,6 +64,7 @@ def render(self, h, comp, *args):
     return ('Viewing ', h.b(self.title), h.br, h.br,
             'You can return to the ', h.a('FrontPage').action(comp.becomes, Page(u'FrontPage')))
 
+
 # ---------------------------------------------------------------------------
 
 class PageEditor(object):
@@ -103,6 +103,7 @@ def render(self, h, *args):
     """
     return ('Editing ', h.b(self.page.title))
 
+
 # ---------------------------------------------------------------------------
 
 class Wiki(object):
@@ -123,18 +124,19 @@ class Wiki(object):
 @presentation.render_for(Wiki)
 def render(self, h, *args):
     h.head.css('main_css', '''
-    .document:first-letter { font-size:2em }
-    .meta { float:right; width: 10em; border: 1px dashed gray;padding: 1em; margin: 1em; }
+        .document:first-letter { font-size:2em }
+        .meta { float:right; width: 10em; border: 1px dashed gray;padding: 1em; margin: 1em; }
     ''')
 
     return (
-             # The following div display the 'meta' view of the current
-             # ``self.content`` component. It can be a Page component or
-             # a PageEditor component. We don't care because both has a
-             # ``meta`` view.
-             h.div(self.content.render(h, model='meta'), class_='meta'),
-             self.content,
-            )
+        # The following div display the 'meta' view of the current
+        # ``self.content`` component. It can be a Page component or
+        # a PageEditor component. We don't care because both has a
+        # ``meta`` view.
+        h.div(self.content.render(h, model='meta'), class_='meta'),
+        self.content,
+    )
+
 
 # ---------------------------------------------------------------------------
 

@@ -1,20 +1,18 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
+# --
 
 """Actions added to navigate between the thumbnail view and the full view
 of the Photos"""
-
-from __future__ import with_statement
-
 from nagare import presentation, component
 
-from gallerydata import *
+from gallerydata import PhotoData, GalleryData
+
 
 # ---------------------------------------------------------------------------
 
@@ -91,6 +89,8 @@ def render(self, h, comp, *args):
 
     return h.root
 
+
 # ---------------------------------------------------------------------------
 
-app = lambda: Gallery(u'MyGallery')
+def app():
+    return Gallery(u'MyGallery')

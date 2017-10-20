@@ -1,18 +1,16 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
+# --
 
-from __future__ import with_statement
-
-import operator
 from nagare import component, presentation, util
 
-class TicTacToe:
+
+class TicTacToe(object):
     def __init__(self):
         self._board = [0] * 9
 
@@ -29,6 +27,7 @@ class TicTacToe:
 
     def is_ended(self):
         return all(self._board)
+
 
 @presentation.render_for(TicTacToe)
 def render(self, h, comp, *args):
@@ -48,6 +47,7 @@ def render(self, h, comp, *args):
                         i += 1
     return h.root
 
+
 class Task(component.Task):
     def go(self, comp):
         while True:
@@ -64,24 +64,25 @@ class Task(component.Task):
                 board.played(player + 1, played)
 
             if board.is_won():
-                msg = 'Player %s WON !' % players[player]
+                msg = 'Player %s WON!' % players[player]
             else:
-                msg = 'Nobody WON !'
+                msg = 'Nobody WON!'
 
             comp.call(util.Confirm(msg))
+
 
 # -----------------------------------------------------------------------------
 
 hl_lines = (
     range(12, 72),
     (
-        (4,),
+        (1,),
         'Definition of a Plain Old Python Object',
-        range(4, 21)
+        range(1, 18)
     ),
 
     (
-        (22,),
+        (21,),
         '<p>Definition of its default HTML view</p>'
         '<p>Parameters are:'
         '<ol>'
@@ -89,29 +90,29 @@ hl_lines = (
         '<li><code>h</code>: a HTML renderer</li>'
         '<li><code>comp</code>: the component wrapping the <code>TicTacToe</code> object</li>'
         '</ol>',
-        range(22, 39)
+        range(21, 37)
     ),
 
     (
-        (33, 52),
+        (31, 51),
         '<p>Use of the <code>call()/answer()</code> mechanism: the task calls a <code>TictacToe</code> component</p>'
         '<p>When an empty cell is clicked, the cell index is sent back to the task '
         'as <code>played</code></p>',
-        (33, 52)
+        (31, 51)
     ),
 
     (
-        (40,),
+        (39,),
         'A <code>component.Task</code> uses continuations to implement the '
         'TicTacToe logic in pure linear Python code',
-        range(40, 61)
+        range(39, 60)
     ),
 
     (
-        (45, 60),
+        (44, 59),
         'Usage of the Nagare components <code>util.Ask</code> '
         'and <code>util.Confirm</code>',
-        (45, 46, 60)
+        (44, 45, 59)
 
     )
 )

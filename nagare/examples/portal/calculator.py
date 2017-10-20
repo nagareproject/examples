@@ -1,18 +1,17 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
-
-from __future__ import with_statement
+# --
 
 import operator
 from nagare import presentation
 
-class Calculator:
+
+class Calculator(object):
     def __init__(self):
         self.display = ''
         self.stack = []
@@ -50,6 +49,7 @@ class Calculator:
             return str(self.stack[-1])
 
         return '0'
+
 
 @presentation.render_for(Calculator)
 def render(self, h, *args):
@@ -93,48 +93,49 @@ def render(self, h, *args):
 
     return h.root
 
+
 # -----------------------------------------------------------------------------
 
 hl_lines = (
     range(12, 95),
     (
-        (4,),
+        (1,),
         'Definition of a Plain Old Calculator Python Object',
-        range(4, 42)
+        range(1, 39)
     ),
 
     (
-        (43,),
+        (42,),
         '<p>Default view for a <code>Calculator</code></p>'
         '<p>Parameters are:'
         '<ol>'
         '<li><code>self</code>: the <code>Calculator</code> object</li>'
         '<li><code>h</code>: a HTML renderer</li>'
         '</ol>',
-        range(43, 84)
+        range(42, 82)
     ),
 
     (
-        (53,),
+        (51,),
         'Direct association of the <code>drop</code> method to a link',
-        (53,)
+        (51,)
     ),
 
     (
-        (54, 61, 68, 75),
+        (52, 59, 66, 73),
         'Association of the <code>operand</code> method to links, with a parameter',
-        (54, 61, 68, 75)
+        (52, 59, 66, 73)
     ),
 
     (
-        (57, 58, 59, 64, 65, 66, 71, 72, 73, 79),
+        (55, 56, 57, 62, 63, 64, 69, 70, 71, 77),
         'Association of the <code>digit</code> method to links, with a parameter',
-        (57, 58, 59, 64, 65, 66, 71, 72, 73, 79)
+        (55, 56, 57, 62, 63, 64, 69, 70, 71, 77)
     ),
 
     (
-        (81,),
+        (79,),
         'Direct association of the <code>enter</code> method to link',
-        (81,)
+        (79,)
     )
 )

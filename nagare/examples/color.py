@@ -1,11 +1,11 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
+# --
 
 """Examples to demonstrate the embedding, binding, replacing and
 call/answer of components"""
@@ -15,7 +15,7 @@ from nagare import presentation
 from nagare.continuation import has_continuation
 
 
-class ColorChooser:
+class ColorChooser(object):
     """A simple object"""
     pass
 
@@ -32,14 +32,15 @@ def render(self, h, comp, *args):
       - the view
     """
     return (
-            h.a('X', style='background-color: #4B96FF').action(comp.answer, '#4B96FF'),
-            h.a('X', style='background-color: #FF8FDF').action(comp.answer, '#FF8FDF'),
-            h.a('X', style='background-color: #9EFF5D').action(comp.answer, '#9EFF5D'),
-            h.a('X', style='background-color: #FFFFFF').action(comp.answer, '#FFFFFF')
-           )
+        h.a('X', style='background-color: #4B96FF').action(comp.answer, '#4B96FF'),
+        h.a('X', style='background-color: #FF8FDF').action(comp.answer, '#FF8FDF'),
+        h.a('X', style='background-color: #9EFF5D').action(comp.answer, '#9EFF5D'),
+        h.a('X', style='background-color: #FFFFFF').action(comp.answer, '#FFFFFF')
+    )
     # Could also be written as:
-    #return [h.a('X', style='background-color:' + color).action(comp.answer, color)
+    # return [h.a('X', style='background-color:' + color).action(comp.answer, color)
     #        for color in ('#4B96FF', '#FF8FDF', '#9EFF5D', '#FFFFFF')]
+
 
 """
 @presentation.render_for(ColorChooser, model='meta')
@@ -48,7 +49,7 @@ def render(self, h, *args):
 """
 
 
-class Text:
+class Text(object):
     """A colorised text"""
     def __init__(self, text='', color='#ffffff'):
         """Initialization
@@ -81,11 +82,13 @@ def render(self, h, *args):
     """
     return h.span(self.text, style='background-color: ' + self.color)
 
+
 """
 @presentation.render_for(Text, model='meta')
 def render(self, h, *args):
     return h.h2('Text')
 """
+
 
 # ---------------------------------------------------------------------------
 
@@ -96,7 +99,9 @@ def render(self, h, *args):
 def example1():
     return Text('Hello world !', 'lightgreen')
 
+
 examples = ('A simple colorised text', example1)
+
 
 # -------------------------------------------------------------------------------------------------------
 
@@ -104,7 +109,7 @@ examples = ('A simple colorised text', example1)
 #
 # - embed and bind components
 
-class App1:
+class App1(object):
     """This component:
 
       - embeds 2 components: a text component and a color chooser
@@ -135,7 +140,9 @@ def render(self, h, *args):
 def render(self, h, *args):
     return h.h2('Yeah !')
 
+
 examples += ('Embedding and binding components', App1)
+
 
 # -------------------------------------------------------------------------------------------------------
 
@@ -143,7 +150,7 @@ examples += ('Embedding and binding components', App1)
 #
 # - embed and bind components
 
-class App2:
+class App2(object):
     """This component implement a simple workflow:
 
       1. display the text component
@@ -181,13 +188,15 @@ def render(self, h, comp, *args):
       - the view
     """
     return (
-             h.a('Change the color').action(self.change_text_color, comp),
-             h.br,
-             self.text,
-            )
+        h.a('Change the color').action(self.change_text_color, comp),
+        h.br,
+        self.text,
+    )
+
 
 if has_continuation:
-    examples += ("Call / answer of a component", App2)
+    examples += ('Call / answer of a component', App2)
+
 
 # -------------------------------------------------------------------------------------------------------
 
@@ -196,7 +205,7 @@ if has_continuation:
 # - illustrate that the same object can be displayed several time with
 #   different views
 
-class App3:
+class App3(object):
     def __init__(self):
         self.app = component.Component(App1())
 
@@ -213,14 +222,16 @@ def render(self, h, *args):
       - the view
     """
     return h.table(h.tr(
-                        # The component is rendered with the default view
-                        h.td(self.app, align='center'),
+        # The component is rendered with the default view
+        h.td(self.app, align='center'),
 
-                        # The component is rendered with the ``meta`` view
-                        h.td(self.app.render(h, model='meta'), align='center')
-                       ))
+        # The component is rendered with the ``meta`` view
+        h.td(self.app.render(h, model='meta'), align='center')
+    ))
+
 
 examples += ('Twice the same component with 2 different views', App3)
+
 
 # -------------------------------------------------------------------------------------------------------
 
@@ -228,7 +239,7 @@ examples += ('Twice the same component with 2 different views', App3)
 #
 # - demonstrate that each component follow its own workflow
 
-class Double:
+class Double(object):
     def __init__(self):
         self.left = component.Component(App1())
         self.right = component.Component(App2())
@@ -238,6 +249,7 @@ class Double:
 def render(self, h, *args):
     return h.table(h.tr(h.td(self.left, align='center'),
                         h.td(self.right, align='center')))
+
 
 if has_continuation:
     examples += ('2 independante components', Double)

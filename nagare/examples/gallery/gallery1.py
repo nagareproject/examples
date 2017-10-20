@@ -1,20 +1,19 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
+# --
 
 """A Photo component is defined that can read its image, thumbnail and
 title data from the database and display them
 """
-from __future__ import with_statement
-
 from nagare import presentation
 
-from gallerydata import *
+from gallerydata import PhotoData
+
 
 # ---------------------------------------------------------------------------
 
@@ -53,7 +52,9 @@ def render(self, h, *args):
 
     return h.root
 
+
 # ---------------------------------------------------------------------------
 
 # Display the first photo
-app = lambda: Photo(1)
+def app():
+    return Photo(1)

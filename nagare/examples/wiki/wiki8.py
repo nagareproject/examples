@@ -1,18 +1,15 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
+# --
 
 """Step #2 to add significative URLs : an URL of the form '.../page/<page title>'
 and without a valid session id, go to the page
 """
-
-from __future__ import with_statement
-
 import re
 import docutils.core
 
@@ -58,6 +55,7 @@ def render(self, h, comp, *args):
     return ('Viewing ', h.b(self.title), h.br, h.br,
             'You can return to the ', h.a('FrontPage', href='page/FrontPage').action(comp.answer, u'FrontPage'))
 
+
 # ---------------------------------------------------------------------------
 
 class PageEditor(object):
@@ -88,6 +86,7 @@ def render(self, h, comp, *args):
 @presentation.render_for(PageEditor, model='meta')
 def render(self, h, *args):
     return ('Editing ', h.b(self.page.title))
+
 
 # ---------------------------------------------------------------------------
 
@@ -144,9 +143,10 @@ def render(self, h, comp, *args):
 # In this step, we only manage URL of the form '.../page/<page title>'
 @presentation.init_for(Wiki, "(len(url) == 2) and (url[0] == 'page')")
 def init(self, url, *args):
-    title = url[1]  # Retrieve the page title. The condition of this generic
-                    # method already checks that the URL is of the form:
-                    # '.../page/<page title>'
+    # Retrieve the page title. The condition of this generic
+    # method already checks that the URL is of the form:
+    # '.../page/<page title>'
+    title = url[1]
 
     # Check if a page with the wanted title exists
     page = PageData.get_by(pagename=title)
@@ -155,6 +155,7 @@ def init(self, url, *args):
 
     # Go to the page
     self.goto(title)
+
 
 # ---------------------------------------------------------------------------
 

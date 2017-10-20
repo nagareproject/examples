@@ -1,17 +1,15 @@
 # -*- coding: iso-8859-1 -*-
 
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
+# --
 
 """Forms with validation rules"""
-
-from __future__ import with_statement
 
 from nagare import component, presentation, editor, validator
 from nagare.continuation import has_continuation
@@ -20,6 +18,7 @@ from nagare.examples import widgets
 # --------------------------------------------------------------------------
 
 examples = ()
+
 
 class Form(object):
     """Object to edit"""
@@ -108,6 +107,7 @@ class FormEditor(editor.Editor):
 
         self.color([])
 
+
 # ---------------------------------------------------------------------------
 
 # This example illustrates:
@@ -171,7 +171,9 @@ def example1():
     # a component
     return component.Component(FormEditor(Form()))
 
+
 examples += ('Form with validation rules and "inline" error notifications', example1)
+
 
 # ---------------------------------------------------------------------------
 
@@ -205,12 +207,12 @@ def render(self, h, *args):
     ''')
 
     errors = [(name, error) for (name, error) in (
-                                                     ('Age', self.age.error),
-                                                     ('Text', self.area.error),
-                                                     ('Password', self.confirm.error)
-                                                 ) if error]
+        ('Age', self.age.error),
+        ('Text', self.area.error),
+        ('Password', self.confirm.error)
+    ) if error]
 
-    if len(errors):
+    if errors:
         with h.div(class_='errors'):
             h << h.ol([h.li('%s: %s' % error) for error in errors])
 
@@ -264,7 +266,9 @@ class App:
 def render(self, h, *args):
     return self.editor.render(h, model='errors')
 
+
 examples += ('Form with validation rules and error notifications', App)
+
 
 # --------------------------------------------------------------------------
 
@@ -335,16 +339,18 @@ def example2():
 
     # Create an object that display a table
     table = widgets.Table(
-                          rows,                                         # The data
-                          headers,                                      # Names of the fields
-                          sortable_headers=headers,                     # Names of the sortable fields
-                          colors=('lightblue', 'white'),                # The background of the displayed lines cycle on these colors
-                          edit=edit_name if has_continuation else None  # Callback to edit a line
-                         )
+        rows,                                         # The data
+        headers,                                      # Names of the fields
+        sortable_headers=headers,                     # Names of the sortable fields
+        colors=('lightblue', 'white'),                # The background of the displayed lines cycle on these colors
+        edit=edit_name if has_continuation else None  # Callback to edit a line
+    )
 
     return component.Component(table)
 
+
 examples += ('Sortable data grid', example2)
+
 
 # --------------------------------------------------------------------------
 
@@ -358,7 +364,9 @@ def example3():
 
     return component.Component(table)
 
+
 examples += ('Batched data grid', example3)
+
 
 # --------------------------------------------------------------------------
 
@@ -437,12 +445,13 @@ def example4():
     rows = [[2, 'a'], [3, 'b'], [1, 'c']]
     headers = ('id', 'name')
     return widgets.SelectionTable(
-                                    rows,
-                                    headers, sortable_headers=headers,
-                                    colors=('lightblue', 'white'),
-                                    # List of the callbacks
-                                    edit=(('Modifier', modify_rows), ('Reset', reset_rows))
-                                   )
+        rows,
+        headers, sortable_headers=headers,
+        colors=('lightblue', 'white'),
+        # List of the callbacks
+        edit=(('Modifier', modify_rows), ('Reset', reset_rows))
+    )
+
 
 if has_continuation:
     examples += ("Grid data with multiple actions", example4)

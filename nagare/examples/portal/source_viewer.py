@@ -1,13 +1,11 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
-
-from __future__ import with_statement
+# --
 
 import inspect
 
@@ -17,25 +15,27 @@ from nagare import presentation
 
 
 class HtmlFormatter(formatters.HtmlFormatter):
-    def __init__(self, hl_lines, *args, **kw):
+    def __init__(self, active_lines, *args, **kw):
         super(HtmlFormatter, self).__init__(*args, **kw)
         self.marker_lines = {}
-        self.hl_lines = {}
+        self.active_lines = {}
 
-        for (i, (marker_lines, _, lines)) in enumerate(hl_lines):
+        for i, (marker_lines, _, lines) in enumerate(active_lines):
             for marker_line in marker_lines:
                 self.marker_lines[marker_line - 1] = i
 
             for line in lines:
-                self.hl_lines.setdefault(line - 1, []).append(i)
+                self.active_lines.setdefault(line - 1, []).append(i)
 
     def wrap(self, source, outfile):
         return self._wrap(source)
 
     def _wrap(self, source):
-        for (i, (code, line)) in enumerate(source):
+        for i, (code, line) in enumerate(source):
+            line = line.replace('<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">', '<span class="lineno">')
+
             if code:
-                markers = self.hl_lines.get(i)
+                markers = self.active_lines.get(i)
                 if markers is not None:
                     line = '<span class="%s">%s</span>' % (' '.join('block_%d' % marker for marker in markers), line)
 
@@ -43,7 +43,7 @@ class HtmlFormatter(formatters.HtmlFormatter):
                 if marker is not None:
                     line = '<span class="highlight_block_marker" name="%d">%s</span>' % (marker, line)
 
-            yield (code, line)
+            yield code, line
 
 
 class SourceViewer(object):
@@ -74,7 +74,8 @@ def render(self, h, comp, *args):
                 h << h.div(h.parse_htmlstring(description), class_='description', id='description_%d' % i, style='display: none')
 
         with h.div(class_='right'):
-            code = highlight(self.code, lexers.PythonLexer(), HtmlFormatter(self.hl_lines, nowrap=False, noclasses=True, linenos='inline'))
+            formatter = HtmlFormatter(self.hl_lines, nowrap=False, noclasses=True, linenos='inline')
+            code = highlight(self.code, lexers.PythonLexer(), formatter)
             h << h.pre(h.parse_htmlstring(code))
 
         h << h.script('init_sourceviewer()')

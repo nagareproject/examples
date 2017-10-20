@@ -1,17 +1,15 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
+# --
 
 """Examples to demonstrate the separation between UI components
 and a logic component implemented as a ``component.Task``
 """
-
-from __future__ import with_statement
 
 from nagare import component, presentation, util
 from nagare.continuation import has_continuation
@@ -20,7 +18,8 @@ from nagare.continuation import has_continuation
 
 examples = ()
 
-class TicTacToe:
+
+class TicTacToe(object):
     """The TicTacToe board
     """
     def __init__(self):
@@ -89,6 +88,7 @@ def render(self, h, comp, *args):
                         i += 1
     return h.root
 
+
 # ---------------------------------------------------------------------------
 
 class Task(component.Task):
@@ -116,15 +116,16 @@ class Task(component.Task):
                 board.played(player + 1, played)
 
             if board.is_won():
-                msg = 'Player %s WON !' % players[player]
+                msg = 'Player %s WON!' % players[player]
             else:
-                msg = 'Nobody WON !'
+                msg = 'Nobody WON!'
 
             # 4. Display the end message
             comp.call(util.Confirm(msg))
 
+
 if has_continuation:
-    examples += ("Using a component.Task() to implement the game logic", Task)
+    examples += ('Using a component.Task() to implement the game logic', Task)
 
 
 # ---------------------------------------------------------------------------
@@ -144,8 +145,10 @@ class App(object):
 def render(self, h, *args):
     return self.inner.render(h.AsyncRenderer())
 
+
 if has_continuation:
     examples += ('Automatic use of asynchronous requests/updates', App)
+
 
 # ---------------------------------------------------------------------------
 
@@ -164,7 +167,7 @@ def render(self, h, binding, *args):
     self.nb_display += 1
 
     with h.div:
-        h << h.div('Full page generations: ',  self.nb_display)
+        h << h.div('Full page generations: ', self.nb_display)
 
         with h.div(style='float: left'):
             h << h.div('Synchronous', style='text-align: center; margin-top: 10px')
@@ -179,6 +182,7 @@ def render(self, h, binding, *args):
             h << h.td(self.right.render(h.AsyncRenderer()))
 
     return h.root
+
 
 if has_continuation:
     examples += ('Mixing 2 synchronous / asynchronous components', Double)

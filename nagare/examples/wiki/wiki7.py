@@ -1,16 +1,13 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
+# --
 
 """Step #1 to add significative URLs : going to a page change the URL"""
-
-from __future__ import with_statement
-
 import re
 import docutils.core
 
@@ -58,6 +55,7 @@ def render(self, h, comp, *args):
             # So, the 'FrontPage' has the URL '.../page/FrontPage'
             'You can return to the ', h.a('FrontPage', href='page/FrontPage').action(comp.answer, u'FrontPage'))
 
+
 # ---------------------------------------------------------------------------
 
 class PageEditor(object):
@@ -88,6 +86,7 @@ def render(self, h, comp, *args):
 @presentation.render_for(PageEditor, model='meta')
 def render(self, h, *args):
     return ('Editing ', h.b(self.page.title))
+
 
 # ---------------------------------------------------------------------------
 
@@ -136,6 +135,7 @@ def render(self, h, comp, *args):
                 h << h.a(page.pagename, href='page/' + page.pagename).action(comp.answer, page.pagename)
 
     return h.root
+
 
 # ---------------------------------------------------------------------------
 

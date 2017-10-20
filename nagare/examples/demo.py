@@ -1,13 +1,11 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
-
-from __future__ import with_statement
+# --
 
 from nagare import component, presentation
 
@@ -18,6 +16,7 @@ import color
 import tictactoe
 import form
 import number
+
 
 # ---------------------------------------------------------------------------
 
@@ -38,7 +37,7 @@ class Menu(object):
 @presentation.render_for(Menu)
 def render(self, h, comp, *args):
     with h.ul(class_='menu'):
-        for (i, (label, href)) in enumerate(self.labels):
+        for i, (label, href) in enumerate(self.labels):
             # When clicked, an entry answers with its index
             a = h.a(label, href=href).action(comp.answer, i)
             if i == self._selected:
@@ -47,6 +46,7 @@ def render(self, h, comp, *args):
             h << h.li(a)
 
     return h.root
+
 
 # ---------------------------------------------------------------------------
 
@@ -146,6 +146,7 @@ def render(self, h, comp, *args):
 
     return h.root
 
+
 # ---------------------------------------------------------------------
 
 @presentation.init_for(Examples, "len(url) == 1")
@@ -179,6 +180,7 @@ def init(self, url, comp, http_method, request):
     if len(url) > 2:
         self.example.init(url[2:], http_method, request)
 
+
 # ---------------------------------------------------------------------
 
 def module_name(name):
@@ -203,7 +205,10 @@ for module in modules:
     if module.examples:
         examples.append((module_name(module.__name__), zip(module.examples[::2], module.examples[1::2])))
 
+
 # Url to display a module code from the GitHub repository
 EXAMPLES_URL = 'https://github.com/nagareproject/examples/blob/master/nagare/examples/%s.py'
 
-app = lambda: Examples('Demo', EXAMPLES_URL, examples)
+
+def app():
+    return Examples('Demo', EXAMPLES_URL, examples)

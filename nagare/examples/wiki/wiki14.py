@@ -1,11 +1,11 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
+# --
 
 """Permissions associated to the user objects
 
@@ -13,9 +13,6 @@ First, log as 'guest / guest'
 Then, log as the editor 'john / john'.
 Then try as the administrator 'admin / admin'.
 """
-
-from __future__ import with_statement
-
 import re
 import docutils.core
 
@@ -23,9 +20,10 @@ from nagare import component, presentation, var, continuation, security, wsgi
 
 from wikidata import PageData
 
+
 # ---------------------------------------------------------------------------
 
-class Login:
+class Login(object):
     def logout(self):
         security.get_manager().logout()
 
@@ -36,17 +34,18 @@ def render(self, h, binding, *args):
 
     if not user:
         html = h.form(
-                      'Login: ', h.input(name='__ac_name'), ' ',
-                      'Password: ', h.input(type='password', name='__ac_password'), ' ',
-                      h.input(type='submit', value='ok')
-                     )
+            'Login: ', h.input(name='__ac_name'), ' ',
+            'Password: ', h.input(type='password', name='__ac_password'), ' ',
+            h.input(type='submit', value='ok')
+        )
     else:
         html = (
-                'Welcome ', h.b(user.id), h.br,
-                h.a('logout').action(self.logout)
-               )
+            'Welcome ', h.b(user.id), h.br,
+            h.a('logout').action(self.logout)
+        )
 
     return html
+
 
 # ---------------------------------------------------------------------------
 
@@ -92,6 +91,7 @@ def render(self, h, comp, *args):
     return ('Viewing ', h.b(self.title), h.br, h.br,
             'You can return to the ', h.a('FrontPage', href='page/FrontPage').action(comp.answer, u'FrontPage'))
 
+
 # ---------------------------------------------------------------------------
 
 class PageEditor(object):
@@ -122,6 +122,7 @@ def render(self, h, comp, *args):
 @presentation.render_for(PageEditor, model='meta')
 def render(self, h, *args):
     return ('Editing ', h.b(self.page.title))
+
 
 # ---------------------------------------------------------------------------
 
@@ -177,6 +178,7 @@ def render(self, h, comp, *args):
 
     return h.root
 
+
 # ---------------------------------------------------------------------------
 
 @presentation.init_for(Wiki, "(len(url) == 2) and (url[0] == 'page')")
@@ -193,6 +195,7 @@ def init(self, url, *args):
 @presentation.init_for(Wiki, "len(url) and (url[0] == 'all')")
 def init(self, url, comp, *args):
     continuation.Continuation(self.select_a_page, comp)
+
 
 # ---------------------------------------------------------------------------
 
@@ -243,11 +246,13 @@ class UserWithPermissionsRules(common.Rules):
 class SecurityManager(Authentication, UserWithPermissionsRules):
     pass
 
+
 # ---------------------------------------------------------------------------
 
 class WSGIApp(wsgi.WSGIApp):
     def __init__(self, app_factory):
         super(WSGIApp, self).__init__(app_factory)
         self.security = SecurityManager()
+
 
 app = WSGIApp(lambda: component.Component(Wiki()))

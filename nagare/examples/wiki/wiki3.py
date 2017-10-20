@@ -1,19 +1,16 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
+# --
 
 """The default view for a Page will now format its ReStructuredText
 content in HTML and activate the WikiWord. NOTE: at this stage, clicking
 on a WikiWord will raise an error.
 """
-
-from __future__ import with_statement
-
 import re               # To detect the WikiWords
 import docutils.core    # To translate the ReST in HTML
 
@@ -62,6 +59,7 @@ def render(self, h, comp, *args):
 
     return (html, h.a('Edit this page').action(self.edit, comp))
 
+
 # ---------------------------------------------------------------------------
 
 class PageEditor(object):
@@ -70,6 +68,7 @@ class PageEditor(object):
 
     def answer(self, comp, text):
         comp.answer(text())
+
 
 @presentation.render_for(PageEditor)
 def render(self, h, comp, *args):
@@ -87,6 +86,8 @@ def render(self, h, comp, *args):
 
     return h.root
 
+
 # ---------------------------------------------------------------------------
 
-app = lambda: Page(u'FrontPage')
+def app():
+    return Page(u'FrontPage')

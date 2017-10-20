@@ -1,20 +1,17 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
+# --
 
 """Digest HTTP authentication of the users added.
 
 First, log as the editor 'john / john'.
 Then try as the administrator 'admin / admin'.
 """
-
-from __future__ import with_statement
-
 import re
 import docutils.core
 
@@ -22,9 +19,10 @@ from nagare import component, presentation, var, continuation, security, wsgi
 
 from wikidata import PageData
 
+
 # ---------------------------------------------------------------------------
 
-class Login:
+class Login(object):
     pass
 
 
@@ -36,6 +34,7 @@ def render(self, h, *args):
         return h.i('not logged')
 
     return ('Welcome ', h.b(user.id))
+
 
 # ---------------------------------------------------------------------------
 
@@ -76,6 +75,7 @@ def render(self, h, comp, *args):
     return ('Viewing ', h.b(self.title), h.br, h.br,
             'You can return to the ', h.a('FrontPage', href='page/FrontPage').action(comp.answer, u'FrontPage'))
 
+
 # ---------------------------------------------------------------------------
 
 class PageEditor(object):
@@ -106,6 +106,7 @@ def render(self, h, comp, *args):
 @presentation.render_for(PageEditor, model='meta')
 def render(self, h, *args):
     return ('Editing ', h.b(self.page.title))
+
 
 # ---------------------------------------------------------------------------
 
@@ -160,6 +161,7 @@ def render(self, h, comp, *args):
 
     return h.root
 
+
 # ---------------------------------------------------------------------------
 
 @presentation.init_for(Wiki, "(len(url) == 2) and (url[0] == 'page')")
@@ -176,6 +178,8 @@ def init(self, url, *args):
 @presentation.init_for(Wiki, "len(url) and (url[0] == 'all')")
 def init(self, url, comp, *args):
     continuation.Continuation(self.select_a_page, comp)
+
+
 # ---------------------------------------------------------------------------
 
 from peak.rules import when
@@ -212,6 +216,7 @@ class HardcodedRules(common.Rules):
 class SecurityManager(Authentication, HardcodedRules):
     pass
 
+
 # ---------------------------------------------------------------------------
 
 class WSGIApp(wsgi.WSGIApp):
@@ -219,5 +224,6 @@ class WSGIApp(wsgi.WSGIApp):
         super(WSGIApp, self).__init__(app_factory)
         # A digest authentication needs a private key
         self.security = SecurityManager(realm='My wiki', private_key='0123456789')
+
 
 app = WSGIApp(lambda: component.Component(Wiki()))

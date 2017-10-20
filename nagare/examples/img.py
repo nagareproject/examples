@@ -1,11 +1,11 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
+# --
 
 """Dynamic generation of an image data
 
@@ -47,4 +47,6 @@ def render(self, h, *args):
     # An action can be associated to a ``<img>`` tag
     return (h.h1(self.title), h.img.action(self.send_image))
 
-app = lambda: Image('Hello world !', 'http://www.google.fr/intl/fr_fr/images/logo.gif')
+
+def app():
+    return Image('Hello world!', 'http://www.google.fr/intl/fr_fr/images/logo.gif')

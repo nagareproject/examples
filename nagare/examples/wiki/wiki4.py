@@ -1,17 +1,14 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
+# --
 
 """A Wiki component is added that manage the navigation into the pages
 """
-
-from __future__ import with_statement
-
 import re
 import docutils.core
 
@@ -19,9 +16,11 @@ from nagare import component, presentation, var
 
 from wikidata import PageData
 
+
 # ---------------------------------------------------------------------------
 
 wikiwords = re.compile(r'\b([A-Z]\w+[A-Z]+\w+)')
+
 
 class Page(object):
     def __init__(self, title):
@@ -50,6 +49,7 @@ def render(self, h, comp, *args):
 
     return (html, h.a('Edit this page').action(self.edit, comp))
 
+
 # ---------------------------------------------------------------------------
 
 class PageEditor(object):
@@ -75,6 +75,7 @@ def render(self, h, comp, *args):
         h << h.input(type='submit', value='Cancel').action(comp.answer)
 
     return h.root
+
 
 # ---------------------------------------------------------------------------
 
@@ -116,6 +117,7 @@ def render(self, h, *args):
     ''')
 
     return self.content
+
 
 # ---------------------------------------------------------------------------
 

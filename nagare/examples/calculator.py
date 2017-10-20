@@ -1,11 +1,11 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
+# --
 
 """A RPN calculator"""
 
@@ -13,7 +13,7 @@ import operator
 from nagare import presentation
 
 
-class Calculator:
+class Calculator(object):
     """A RPN calculator object with methods to manage the stack
     """
     def __init__(self):
@@ -123,5 +123,6 @@ def render(self, h, *args):
                 h << h.td(h.a(u'\N{WHITE RIGHT-POINTING POINTER}').action(self.enter))
 
     return h.root
+
 
 examples = ('RPN calculator', Calculator)

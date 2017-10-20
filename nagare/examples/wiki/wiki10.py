@@ -1,24 +1,22 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
+# --
 
 """Security checks added. When not logged, editing a page or clicking on
 the 'View the complete list of pages' link raise a security exception
 """
-
-from __future__ import with_statement
-
 import re
 import docutils.core
 
 from nagare import component, presentation, var, continuation, security
 
 from wikidata import PageData
+
 
 # ---------------------------------------------------------------------------
 
@@ -36,6 +34,7 @@ def render(self, h, *args):
         return h.i('not logged')
 
     return ('Welcome ', h.b(user.id))
+
 
 # ---------------------------------------------------------------------------
 
@@ -78,6 +77,7 @@ def render(self, h, comp, *args):
     return ('Viewing ', h.b(self.title), h.br, h.br,
             'You can return to the ', h.a('FrontPage', href='page/FrontPage').action(comp.answer, u'FrontPage'))
 
+
 # ---------------------------------------------------------------------------
 
 class PageEditor(object):
@@ -104,9 +104,11 @@ def render(self, h, comp, *args):
 
     return h.root
 
+
 @presentation.render_for(PageEditor, model='meta')
 def render(self, h, *args):
     return ('Editing ', h.b(self.page.title))
+
 
 # ---------------------------------------------------------------------------
 
@@ -165,6 +167,7 @@ def render(self, h, comp, *args):
 
     return h.root
 
+
 # ---------------------------------------------------------------------------
 
 @presentation.init_for(Wiki, "(len(url) == 2) and (url[0] == 'page')")
@@ -181,6 +184,7 @@ def init(self, url, *args):
 @presentation.init_for(Wiki, "len(url) and (url[0] == 'all')")
 def init(self, url, comp, *args):
     continuation.Continuation(self.select_a_page, comp)
+
 
 # ---------------------------------------------------------------------------
 

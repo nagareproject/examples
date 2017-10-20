@@ -1,20 +1,18 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
+# --
 
 """Adding significative URLs"""
-
-from __future__ import with_statement
-
 from nagare import presentation, component, editor, validator, continuation
 
-from gallerydata import *
+from gallerydata import PhotoData, GalleryData
 import thumb
+
 
 # ---------------------------------------------------------------------------
 
@@ -86,6 +84,7 @@ def render(self, h, comp, *args):
                     h << h.input(type='submit', value='Cancel', id='submitbutton').action(comp.answer)
 
     return h.root
+
 
 # ---------------------------------------------------------------------------
 
@@ -163,6 +162,8 @@ def init(self, url, comp, *args):
     # Temporary change the Gallery (the ``comp``) with the photo
     continuation.Continuation(comp.call, photo)
 
+
 # ---------------------------------------------------------------------------
 
-app = lambda: Gallery(u'MyGallery2')
+def app():
+    return Gallery(u'MyGallery2')

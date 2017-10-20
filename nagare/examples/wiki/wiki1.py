@@ -1,20 +1,19 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
+# --
 
 """A Page component is defined that can read its content from the database
 and display it
 """
-from __future__ import with_statement
-
 from nagare import presentation
 
 from nagare.examples.wiki.wikidata import PageData   # The database entities
+
 
 # ---------------------------------------------------------------------------
 
@@ -47,6 +46,8 @@ def render(self, h, *args):
 
     return h.root
 
+
 # ---------------------------------------------------------------------------
 
-app = lambda: Page(u'FrontPage')  # The factory creates the ``FrontPage`` page
+def app():
+    return Page(u'FrontPage')  # The factory creates the ``FrontPage`` page

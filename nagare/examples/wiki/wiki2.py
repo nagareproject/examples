@@ -1,20 +1,18 @@
-#--
-# Copyright (c) 2008-2013 Net-ng.
+# --
+# Copyright (c) 2008-2017 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
 # the file LICENSE.txt, which you should have received as part of
 # this distribution.
-#--
+# --
 
 """A PageEditor component is added to edit the content of a page
 """
-
-from __future__ import with_statement
-
 from nagare import presentation, var
 
 from wikidata import PageData
+
 
 # ---------------------------------------------------------------------------
 
@@ -58,6 +56,7 @@ def render(self, h, comp, *args):
 
     return h.root
 
+
 # ---------------------------------------------------------------------------
 
 class PageEditor(object):
@@ -100,6 +99,8 @@ def render(self, h, comp, *args):
 
     return h.root
 
+
 # ---------------------------------------------------------------------------
 
-app = lambda: Page(u'FrontPage')
+def app():
+    return Page(u'FrontPage')
