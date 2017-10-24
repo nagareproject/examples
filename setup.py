@@ -15,12 +15,12 @@ setup(
     name='nagare.examples',
     version=VERSION,
     author='Alain Poirier',
-    author_email='alain.poirier at net-ng.com',
+    author_email='alain.poirier@net-ng.com',
     description='Demo and examples for the Nagare web framework',
     long_description='''Read the `installation document <http://www.nagare.org/doc/demo_installation>`_
     to do a standard installation or a developer installation with the
     latest development version from the `github repository <https://github.com/nagareproject/examples>`_.
-    ''',
+    '''.replace('\n', ''),
     license='BSD',
     keywords='web wsgi framework sqlalchemy elixir seaside continuation ajax stackless',
     url='http://www.nagare.org',
@@ -29,7 +29,7 @@ setup(
     include_package_data=True,
     package_data={'': ['*.cfg']},
     zip_safe=False,
-    install_requires=('nagare[database,doc]', 'Pillow'),
+    install_requires=('nagare[database,doc]>=0.5.0', 'Pillow'),
     namespace_packages=('nagare', 'nagare.examples',),
     entry_points='''
     [nagare.applications]
